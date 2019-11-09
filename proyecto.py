@@ -25,8 +25,18 @@ def getMedians(points, r, dim):
     """Se obtienen las r medianas desde dim"""
     return [points[0][i] for i in range(r)]
 
-def matches_criteria(criteria, medians, point):
-    return False
+def at(point, i):
+    return point[i % len(point)]
+
+def matches_criteria(criteria, medians, point, dim):
+    for i, c in enumerate(criteria):
+        leq = at(point, dim+i) <= at(medians, dim+i)
+        # Si con c=False queremos <= a mediana.
+        # No hay match si queremos <= y es > o al revés.
+        # Esto coincide con c == leq
+        if (c == leq):
+            return False
+    return True
 
 def makeKDRTree(points, r, dim = 0):
     if not points:
