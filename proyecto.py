@@ -1,5 +1,8 @@
 import itertools as it
 
+def at(point, i):
+    return point[i % len(point)]
+
 def searchKDTree(kdTree, point, dim = 0):
     if len(kdTree) == 1:
         return kdTree[0] == point
@@ -23,14 +26,15 @@ def makeKDTree(points, dim = 0):
 
 def getMedians(points, r, dim):
     """Se obtienen las r medianas desde dim"""
-    return [points[0][i] for i in range(r)]
-
-def at(point, i):
-    return point[i % len(point)]
+    medians = [None] * r
+    for i in range(r):
+        points.sort(key = lambda p: at(p, dim+i))
+        medians[i] = at(points[len(points) // 2], dim+i)
+    return medians
 
 def matches_criteria(criteria, medians, point, dim):
     for i, c in enumerate(criteria):
-        leq = at(point, dim+i) <= at(medians, dim+i)
+        leq = at(point, dim+i) <= medians[i]
         # Si con c=False queremos <= a mediana.
         # No hay match si queremos <= y es > o al revés.
         # Esto coincide con c == leq
