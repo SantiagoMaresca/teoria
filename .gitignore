@@ -3,3 +3,4 @@ env/scripts
 env/pyenv.cfg
 env/pyvenv.cfg
 *~
+__pycache__/
