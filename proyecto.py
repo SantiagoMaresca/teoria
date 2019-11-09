@@ -1,3 +1,5 @@
+import itertools as it
+
 def searchKDTree(kdTree, point, dim = 0):
     if len(kdTree) == 1:
         return kdTree[0] == point
@@ -23,7 +25,8 @@ def getMedians(points, r, dim):
     """Se obtienen las r medianas desde dim"""
     return [points[0][i] for i in range(r)]
 
-def matches_criteria()
+def matches_criteria(criteria, medians, point):
+    return False
 
 def makeKDRTree(points, r, dim = 0):
     if not points:
