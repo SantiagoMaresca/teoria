@@ -34,13 +34,14 @@ def makeKDRTree(points, r, dim = 0):
     elif len(points) == 1:
         return tuple(points) # Leaf nodes have one point.
 
+    # Obtenemos las r medianas, para las dimensiones dim, dim+1, ..., dim+(r-1)
     medians = getMedians(points, r, dim)
-    partitions = [[p for p in points if p[dim] < median] for criteria in itertools.product([False, True], repeat=r)]
 
-    points.sort(key = lambda p: p[dim])
-    medianIndex = len(points) // 2
-    median = points[medianIndex][dim]
-    nextDim = (dim + 1) % len(points[medianIndex])
-    left = [p for p in points if p[dim] < median]
-    right = [p for p in points if p[dim] >= median]
-    return (median, makeKDTree(left, nextDim), makeKDTree(right, nextDim))
+    partitions = [None] * (2**r + 1) # Tendremos 2**r particiones (hijos)
+    partitions[0] = medians
+    i = 1
+    for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
+        partitions[i] = [p for p in points if matches_criteria(criteria, medians, p)] # n iteraciones
+        i += 1
+   return tuple(partitions)
+
