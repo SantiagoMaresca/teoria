@@ -41,7 +41,9 @@ def makeKDRTree(points, r, dim = 0):
     partitions[0] = medians
     i = 1
     for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-        partitions[i] = [p for p in points if matches_criteria(criteria, medians, p)] # n iteraciones
+        partition = [p for p in points if matches_criteria(criteria, medians, p, dim)] # n iteraciones
+        partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points))
         i += 1
-   return tuple(partitions)
+
+    return tuple(partitions)
 
