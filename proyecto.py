@@ -67,8 +67,19 @@ def makeKDRTree(points, r, dim = 0):
 
 class TestKDTree(unittest.TestCase):
     def setUp(self):
-        random.seed(759334)
-        self.points = list(tuple(random.randint(0, 50) for j in range(5)) for i in range(11))
+        self.points = [
+            (33, 23, 36, 47, 43),
+            (12, 3, 31, 39, 4),
+            (18, 32, 25, 32, 20),
+            (35, 21, 40, 9, 27),
+            (1, 19, 26, 11, 48),
+            (30, 19, 24, 28, 19),
+            (5, 23, 46, 13, 39),
+            (49, 28, 29, 13, 6),
+            (9, 4, 39, 21, 27),
+            (41, 6, 25, 7, 18),
+            (32, 1, 34, 14, 36)
+        ]
         self.r = 2
 
     def test_built_tree(self):
