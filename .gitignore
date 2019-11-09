@@ -2,3 +2,4 @@ env/lib
 env/scripts
 env/pyenv.cfg
 env/pyvenv.cfg
+*~
