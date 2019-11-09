@@ -1,4 +1,7 @@
 import itertools as it
+import random
+
+import unittest
 
 def at(point, i):
     return point[i % len(point)]
@@ -61,7 +64,40 @@ def makeKDRTree(points, r, dim = 0):
 
     return tuple(partitions)
 
-if __name__ == '__main__':
-    t = makeKDRTree([(0, 1, 2), (4, 2, 3)], 2)
-    print(t)
 
+class TestKDTree(unittest.TestCase):
+    def setUp(self):
+        random.seed(759334)
+        self.points = list(tuple(random.randint(0, 50) for j in range(5)) for i in range(11))
+        self.r = 2
+
+    def test_built_tree(self):
+        kdTreeDone = makeKDRTree(self.points[:], self.r)
+        self.assertEqual(kdTreeDone[0], [30, 19])
+        self.assertEqual(kdTreeDone[1], makeKDRTree([self.points[i] for i in [1, 8]], self.r, dim=2))
+        self.assertEqual(kdTreeDone[1][0], [39,39]) # puntos:[1, 8]], dim=2,3
+
+        self.assertEqual(kdTreeDone[2], makeKDRTree([self.points[i] for i in [2, 4, 6]], self.r, dim=2))
+        self.assertEqual(kdTreeDone[2][0], [26, 13]) # puntos:[2, 4, 6]], dim=2,3
+
+        self.assertEqual(kdTreeDone[3], makeKDRTree([self.points[i] for i in [9, 10]], self.r, dim=2))
+        self.assertEqual(kdTreeDone[3][0], [34, 14]) # puntos:[9, 10]], dim=2,3
+
+        self.assertEqual(kdTreeDone[4], makeKDRTree([self.points[i] for i in [0, 3, 5, 7]], self.r, dim=2))
+        self.assertEqual(kdTreeDone[4][0], [36, 28]) # puntos:[0, 3, 5, 7]], dim=2,3
+        self.assertEqual(kdTreeDone[4][1], makeKDRTree([self.points[i] for i in [7]], self.r, dim=4))
+        self.assertEqual(makeKDRTree([self.points[i] for i in [7]], self.r, dim=4), (self.points[7],))
+
+        self.assertEqual(kdTreeDone[4][2], makeKDRTree([self.points[i] for i in [5]], self.r, dim=4))
+        self.assertEqual(makeKDRTree([self.points[i] for i in [5]], self.r, dim=4), (self.points[5],))
+
+        self.assertEqual(kdTreeDone[4][3], makeKDRTree([self.points[i] for i in [3]], self.r, dim=4))
+        self.assertEqual(makeKDRTree([self.points[i] for i in [3]], self.r, dim=4), (self.points[3],))
+
+        self.assertEqual(kdTreeDone[4][4], makeKDRTree([self.points[i] for i in [0]], self.r, dim=4))
+        self.assertEqual(makeKDRTree([self.points[i] for i in [0]], self.r, dim=4), (self.points[0],))
+
+
+
+if __name__ == '__main__':
+    unittest.main()
