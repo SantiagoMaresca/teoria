@@ -59,7 +59,7 @@ def makeKDRTree(points, r, dim = 0):
     i = 1
     for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
         partition = [p for p in points if matches_criteria(criteria, medians, p, dim)] # n iteraciones
-        partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points))
+        partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points[0]))
         i += 1
 
     return tuple(partitions)
@@ -76,7 +76,7 @@ def searchKDRTree(kdrTree, r, point, dim = 0):
         if (matches_criteria(criteria, medians, point, dim)):
             # go to this subtree
             chosen_subtree = kdrTree[i]
-            return searchKDRTree(chosen_subtree, r, point, dim+r)
+            return searchKDRTree(chosen_subtree, r, point, (dim+r) % len(point))
         i += 1
 
     return False
@@ -98,6 +98,22 @@ class TestKDTree(unittest.TestCase):
             (32, 1, 34, 14, 36)
         ]
         self.r = 2
+
+    def test_large_tree(self):
+        random.seed(8)
+        many_points = [tuple(random.randint(0, 50) for j in range(5)) for i in range(100)]
+        kdrTree = makeKDRTree(many_points[:], 3)
+        for point in many_points:
+            if (not searchKDRTree(kdrTree, 3, point)):
+                print("Point:", point)
+                print("Tree:", kdrTree)
+            self.assertTrue(searchKDRTree(kdrTree, 3, point))
+        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(10000)):
+            if point in many_points:
+                self.assertTrue(searchKDRTree(kdrTree, 3, point))
+            else:
+                self.assertFalse(searchKDRTree(kdrTree, 3, point))
+
 
     def test_search_positive(self):
         kdrTree = makeKDRTree(self.points[:], self.r)
