@@ -1,4 +1,4 @@
-\documentclass[11pt]{report}
+\documentclass[11pt]{article}
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
@@ -58,7 +58,7 @@
 
 \fancyhead{}
 \fancyhead[R]{Obligatorio}
-\fancyhead[L]{Capítulo \thechapter}
+\fancyhead[L]{Sección \thesection}
 
 
 
@@ -96,52 +96,6 @@
 
 \input{chapters/title}
 
-\tableofcontents
-
-\chapter{Recursos y Procesos Involucrados}
-\input{chapters/recursos}
-\
-\chapter{Ordenamiento Justificado de los Criterios}\label{cap:criterios}
-\input{chapters/criterios}
-
-\chapter{Problemas similares en Sistemas Operativos e información teórica}
-\input{chapters/similares}
-
-\chapter{Alternativas de solución}
-\input{chapters/alternativas}
-
-\chapter{Escenarios de Prueba}
-\input{chapters/escenarios}
-
-\chapter{Conclusiones}
-\input{chapters/conclusiones}
-
-\appendix
-
-\chapter{Diagrama de clases}
-\input{chapters/diagrama}
-
-\chapter{Máquinas virtuales}
-\input{chapters/virtual_machine}
-
-\begin{thebibliography}{1}
-\raggedright
-\bibitem{silberschatz}
-Silberschatz, A., Galvin, P. B., Gagne, G., \& Allende, J. S.
-(2006).
-\textit{Fundamentos de sistemas operativos}.
-Madrid: McGraw-Hill.
-
-\bibitem{catedra-planificacion}
-Montañes, J., Barrios, E.
-(2015).
-\textit{Planificación de Procesos}.
-Montevideo: FIT.
-
-\bibitem{javaspec}
-Java™ Platform, Standard Edition 8 API Specification.
-(2019).
-Disponible en: \texttt{https://docs.oracle.com/javase/8/docs/api/index.html}
-\end{thebibliography}
+\input{chapters/desarrollo}
 
 \end{document}
