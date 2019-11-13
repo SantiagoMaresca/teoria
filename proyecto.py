@@ -107,7 +107,7 @@ class TestKDTree(unittest.TestCase):
     def test_search(self):
         kdrTree = makeKDRTree(self.points[:], self.r)
         random.seed(759334)
-        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(500)):
+        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(10000)):
             if point in self.points:
                 self.assertTrue(searchKDRTree(kdrTree, self.r, point))
             else:
