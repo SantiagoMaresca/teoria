@@ -101,18 +101,19 @@ class TestKDTree(unittest.TestCase):
 
     def test_large_tree(self):
         random.seed(8)
-        many_points = [tuple(random.randint(0, 50) for j in range(5)) for i in range(100)]
-        kdrTree = makeKDRTree(many_points[:], 3)
+        many_points = [tuple(random.randint(0, 50) for j in range(20)) for i in range(1000)]
+        many_r = 5
+        kdrTree = makeKDRTree(many_points[:], many_r)
         for point in many_points:
-            if (not searchKDRTree(kdrTree, 3, point)):
+            if (not searchKDRTree(kdrTree, many_r, point)):
                 print("Point:", point)
                 print("Tree:", kdrTree)
-            self.assertTrue(searchKDRTree(kdrTree, 3, point))
-        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(10000)):
+            self.assertTrue(searchKDRTree(kdrTree, many_r, point))
+        for point in (tuple(random.randint(0, 50) for j in range(20)) for i in range(10000)):
             if point in many_points:
-                self.assertTrue(searchKDRTree(kdrTree, 3, point))
+                self.assertTrue(searchKDRTree(kdrTree, many_r, point))
             else:
-                self.assertFalse(searchKDRTree(kdrTree, 3, point))
+                self.assertFalse(searchKDRTree(kdrTree, many_r, point))
 
 
     def test_search_positive(self):
