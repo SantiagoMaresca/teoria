@@ -16,4 +16,31 @@
 
 El algoritmo \ref{alg:crear-kdr} muestra la respuesta del sistema cuando se detalla un id de evento.
 En este caso se representa, para el evento determinado, qué entras están disponibles (mediante id),
-    así como su precio.
+	así como su precio.
+
+
+
+	\begin{algorithm}
+		\caption{Listar las entradas disponibles}
+		\label{alg:listar-entradas}
+		\begin{algorithmic}[1]
+		\Procedure{listar}{Socket s, Tokens solicitud}
+			\State s.put(``Las entradas disponibles son: '');
+			\State idEvent $\gets$ solicitud.nextToken()
+			\State evento $\gets$ events[idEvento]
+			\ForAll{(entrada, costo) $\in$ evento.soldTickets.entradasDisponibles()}
+				\State s.put(``\{entrada\}) \$\{costo\}'');
+			\EndFor
+		\EndProcedure
+		\Statex
+		\Require \emph{st.validIds} es un mapa de id entrada a costo (vendidas o no)
+		\Require \emph{st.asientosOcupados} es el mapa descrito en \ref{concurrenthm}
+		\Procedure{entradasDisponibles}{SoldTickets st}
+			\ForAll{(idEntrada, costo) $\in$ st.validIds}
+			\If{st.asientosOcupados.get(entrada) $=$ \textbf{null}}
+				\State \textbf{yield} (idEntrada, costo)
+			\EndIf
+			\EndFor
+		\EndProcedure
+		\end{algorithmic}
+		\end{algorithm}
