@@ -1,0 +1,101 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{xhfill}
+\usepackage{nameref}
+\pagestyle{fancy}
+\usepackage{tikz}
+\usetikzlibrary{babel}
+
+\usepackage{blindtext}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{listingsutf8}
+\usepackage{color}
+\usepackage{enumitem}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\renewcommand{\lstlistingname}{Listado}
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  firstnumber=1,                   % start line enumeration with line 1
+  frame=single,	                   % adds a frame around the code
+  inputpath=../servidor/src/sistop/,
+  inputencoding=utf8/latin1,
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Java,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=none,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+  xleftmargin=15pt,
+  xrightmargin=15pt
+}
+% \usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% \usepackage{fontawesome}
+
+\fancyhead{}
+\fancyhead[R]{Obligatorio}
+\fancyhead[L]{Sección \thesection}
+
+
+
+\makeatletter
+\renewcommand{\ALG@name}{Algoritmo}
+\makeatother
+
+\algrenewcommand\algorithmicprocedure{\textbf{procedimiento}}
+\algrenewcommand\algorithmicif{\textbf{si}}
+\algrenewcommand\algorithmicthen{\textbf{entonces}}
+\algrenewcommand\algorithmicelse{\textbf{si no}}
+\algrenewcommand\algorithmicend{\textbf{fin}}
+\algrenewcommand\algorithmicrequire{\textbf{Pre:}}
+\algrenewcommand\algorithmicensure{\textbf{Post:}}
+\algrenewcommand\algorithmicforall{\textbf{para cada}}
+\algrenewcommand\algorithmicdo{\textbf{hacer}}
+\algrenewcommand{\algorithmiccomment}[1]{\hfill$\langle$ #1}
+
+\graphicspath{ {img/} }
+
+\newcommand{\threadFig}[0]{
+    \begin{tikzpicture}
+      \vspace{5pt}
+      \draw[very thick,color=black] plot [smooth,tension=1.5] coordinates{(0.3,0.5) (0.25,0.37) (0.3,0.25) (0.25,0.12)};
+    \end{tikzpicture}
+}
+
+\newcommand{\BigO}[1]{\ensuremath{\mathrm{O}\bigl(#1\bigr)}}
+\newcommand{\type}[1]{\mbox{\textbf{#1}}}
+\newcommand{\call}[1]{\mbox{\texttt{#1}}}
+
+\overfullrule=2cm
+
+\begin{document}
+
+\input{chapters/title}
+
+\input{chapters/desarrollo}
+
+\end{document}
