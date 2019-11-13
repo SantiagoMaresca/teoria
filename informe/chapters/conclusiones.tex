@@ -1,0 +1,182 @@
+\section{\nameref{escenario-tiempoespera}}
+
+Como primera, y obvia, conclusión, se observa que, efectivamente, se realiza una venta de \(N\) entradas, y no más ni menos,
+por lo que no se observan errores de lógica.
+
+En el caso de la simulación ejecutada, tenemos \(N = 10000\), y la cantidad de clientes que compran cada número de entradas
+se presenta en la tabla \ref{table:3}.
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+	N\textsuperscript{o} de entradas & N\textsuperscript{o} de clientes & Tiempo medio de respuesta (ms)  \\
+\hline
+1 &  255 & 16.434088\\
+2 &  295 & 18.517253 \\
+3 &  261 & 13.974438\\
+4 &  271 & 17.137831\\
+5 &  270 & 15.220248\\
+6 &  263 & 17.686285\\
+7 &  296 & 16.506400 \\
+8 &  286 & 16.822844\\
+\end{tabular}
+\caption{Desglose por cantidad de entradas}
+\label{table:3}
+\end{table}
+
+
+Los tiempos de respuesta fueron medidos en cada interacción para luego calcular su promedio, según algunos criterios.
+En primer caso se analiza el tiempo de respuesta promedio para toda transacción,
+incluyendo las comunicaciones con el sistema de tipo ``consulta de entradas'', así como las ventas fallidas.
+Por otro lado se analiza el tiempo de respuesta de las transacciones que acaban con una venta concretada.
+Los resultados se presentan en la tabla \ref{table:2}.
+Además se presenta en la tabla \ref{table:3} el tiempo medio para cada cantidad de entradas.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|r}
+	{} &  Tiempo de respuesta medio (ms) \\
+	\hline
+Normal & 2.747720 \\
+Transacciones exitosas  & 25.564688 \\
+\end{tabular}
+\caption{Tiempo de respuesta medio}
+\label{table:2}
+\end{table}
+
+De estos datos se concluye que el tiempo medio de respuesta es independiente de la cantidad de entradas adquiridas.
+No es posible concluir que a mayor cantidad de entradas el tiempo de respuesta disminuya, pero observamos que el tiempo tampoco es proporcional a la cantidad de entradas.
+Es probable que el mayor tiempo de procesamiento sea contrarrestado por el hecho de darle atención temprana a las compras de mayor valor económico.
+
+Estos resultados se presentan en la figura \ref{fig:respuesta_concurrente}, mostrando en rojo el valor medio.
+
+\begin{figure}[H]
+\centering{
+        \includegraphics[width=0.7\textwidth]{grafica_1}
+\caption{Tiempo de respuesta vs. cantidad de entradas}
+}
+\label{fig:respuesta_concurrente}
+\end{figure}
+
+\section{Carga del sistema}
+
+En el caso de la simulación ejecutada, tenemos \(N = 10000\), y la misma cantidad de clientes. La cantidad de clientes que compran según
+las distintas cantidades de entradas que se presentan en la tabla \ref{table:carga}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+	N\textsuperscript{o} de entradas & N\textsuperscript{o} de clientes & Tiempo medio de respuesta (ms)  \\
+\hline
+1                 & 1206 &            24.575421 \\
+2                 & 1259 &            21.579129 \\
+3                 & 1253 &            26.233702 \\
+4                 & 1266 &            24.669094 \\
+5                 & 1260 &            25.211271 \\
+6                 & 1274 &            27.186334 \\
+7                 & 1254 &            23.700102 \\
+8                 & 1228 &            25.710476 \\
+\end{tabular}
+\caption{Desglose por cantidad de entradas}
+\label{table:carga}
+\end{table}
+
+Una vez más observamos que el tiempo de respuesta es independiente de la cantidad de entradas solicitadas.
+Los resultados se presentan en la tabla \ref{table:carga2}.
+Además se presenta en la tabla \ref{table:carga} el tiempo medio para cada cantidad de entradas.
+\begin{table}[H]
+\centering
+\begin{tabular}{l|r}
+	{} &  Tiempo de respuesta medio (ms) \\
+	\hline
+Normal & 7.101191 \\
+Transacciones exitosas  & 24.801971 \\
+\end{tabular}
+\caption{Tiempo de respuesta medio}
+\label{table:carga2}
+\end{table}
+
+Al analizar los tiempos de respuesta se puede ver que en comparación con la simulación previa, estos no varían al aumentar significativamente la cantidad de clientes.
+Estos resultados se presentan en la figura \ref{fig:respuesta_carga}, mostrando en rojo el valor medio.
+
+\begin{figure}[H]
+\centering{
+        \includegraphics[width=0.7\textwidth]{graficaMuchos1}
+\caption{Tiempo de respuesta vs. cantidad de entradas}
+}
+\label{fig:respuesta_carga}
+\end{figure}
+
+\section{Compradores reales}
+
+En el caso de la simulación ejecutada, tenemos \(N = 5000\), y \(M = 10000\) clientes. La cantidad de clientes que compran según
+las distintas cantidades de entradas, y el tiempo medio para cada cantidad de entradas, se presentan en la tabla \ref{table:carga}.
+Los compradores que realizan consultas de qué entradas se encuentran disponibles se muestran al final de la misma.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+	N\textsuperscript{o} de entradas & N\textsuperscript{o} de clientes & Tiempo medio de respuesta (ms)  \\
+\hline
+1                 & 661 &            0.396308 \\
+2                 & 640 &            0.824615 \\
+3                 & 618 &            2.713671 \\
+4                 & 685 &            -- \\
+5                 & 640 &            0.364268 \\
+6                 & 690 &            0.556214 \\
+7                 & 624 &            -- \\
+8                 & 730 &            -- \\
+9                 & 649 &            2.453426 \\
+10                & 684 &            -- \\
+Consulta                 & 3380 &           1.338888 \\
+\end{tabular}
+\caption{Desglose por cantidad de entradas}
+\label{table:reales}
+\end{table}
+
+Se dio en esta simulación que ninguno de los clientes que intentó comprar 4, 7, 8 o 10 entradas tuvo éxito en su reserva,
+por lo tanto no se pudo registrar un tiempo de respuesta para estos clientes.
+Se puede observar que no hay una dependencia entre el tiempo de respuesta y la cantidad de entradas solicitadas, lo cual
+nos lleva a concluir que son efectivamente variables independientes, y que las fluctuaciones en el tiempo de respuesta se deben
+al azar en los tiempos de llegada de cada cliente y la cantidad de clientes concurrentes en cada momento.
+
+Los resultados se presentan en la tabla \ref{table:carga2} y en la figura, mostrando en rojo el valor medio \ref{fig:respuesta_reales},
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|r}
+	{} &  Tiempo de respuesta medio (ms) \\
+	\hline
+Normal & 0.649355 \\
+Transacciones exitosas  & 1.331675 \\
+\end{tabular}
+\caption{Tiempo de respuesta medio}
+\label{table:reales2}
+\end{table}
+
+\begin{figure}[H]
+\centering{
+        \includegraphics[width=0.7\textwidth]{grafica_reales}
+\caption{Tiempo de respuesta vs. cantidad de entradas}
+}
+\label{fig:respuesta_reales}
+\end{figure}
+
+Una observación interesante a partir de la gráfica es que a pesar de que el tiempo de respuesta medio para las solicitudes de consulta es bajo
+y similar a los tiempos de las de reserva, muchas consultas tuvieron un tiempo de respuesta mucho mayor. Esto refleja cómo el sistema
+le da mayor prioridad a las solicitudes de reserva (ya que son las que generan ingreso) que a las de consulta, y por lo tanto demora las respuestas
+de consulta con tal de responder rápido a las reservas.
+
+\section{Conclusiones generales}
+
+El uso de la estructuras de datos concurrente \type{ConcurrentHashMap} proporcionó una abstracción que permitió el desarrollo eficaz
+sin mayor preocupación por el control del acceso a la estructura compartida.
+Además, a diferencia de un cerrojo mutex para proteger una estructura común, nuestra estructura permite el acceso concurrente en la mayor parte de los casos,
+aspecto que se observa en los tiempos de espera medidos.
+La eficiencia de dar uso a la ejecución en paralelo mejoró el desempeño del sistema significativamente.
+
+Para la instalación final del producto deberán ser implementada algunas características menores que se obviaron para presentar las simulaciones más relevantes.
+En primer lugar los datos del programa (eventos, esquema de distribución de asientos del estadio, descuentos y proporción de hilos de venta contra solicitud) serán leídos
+de datos locales, permitiendo que sean sobrescritos fácilmente.
+Además se implementará el sistema de autenticación de usuarios, así como la opción de pago online mediante uso de tarjetas o puestos de venta.
+Con un usuario autenticado será posible además poseer datos del mismo, como una dirección de correo mediante la cual comunicar sobre sus compras,
+enviándole entradas digitales.

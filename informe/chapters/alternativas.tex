@@ -1,0 +1,345 @@
+\section{Marco general}
+
+El sistema de ventas consiste de un servidor \emph{Web Services} el cual
+proporciona una API que permite a los usuarios realizar la consulta de
+entradas y la compra de las mismas.
+
+Para realizar esta operación el sistema solicita que se esté autenticado
+(creando un usuario y una contraseña) para permitir continuar con las
+operaciones.
+
+\section{Concurrencia de la transacción}
+Un problema a resolver, en cuanto a lo técnico, es que la venta de
+entradas funcione de manera concurrente, permitiendo a muchos clientes operar a
+la vez no solo permitiendo un bajo tiempo de respuesta sino imposibilitando
+fallas como vender una misma entrada a múltiples compradores.
+
+\subsection{Bloqueo para cada operación} \label{alt-bloqueo}
+Una solución posible consiste en utilizar semáforos para controlar el acceso a
+una estructura principal de \emph{entradas disponibles}, única para cada evento
+(ver Figura \ref{fig:bloqueocadaop}).
+
+Cuando un usuario comience la operación elegirá una entrada a comprar, luego de
+lo cual se le solicitará información de pago y demás. En el momento en que
+escoge el asiento se quitará la entrada de la estructura, controlando el acceso
+a ella mediante un semáforo.
+
+\begin{figure}
+\centering{
+	\def\svgwidth{\linewidth}
+\input{img/bloqueo.pdf_tex}
+\caption{\nameref{alt-bloqueo}}
+\label{fig:bloqueocadaop}
+}
+\end{figure}
+
+\begin{verbatim}
+GetSemaphore();
+RemoveTicketIfAvailable(ticketId);
+ReleaseSemaphore();
+\end{verbatim}
+
+De esta forma nos aseguramos que la estructura siempre contiene las entradas que
+están disponibles y que cuando un cliente elija una entrada solo se le
+permitirá continuar si ella está realmente libre.
+
+Al mostrarle las entradas al usuario para que elija basta con consultar la lista
+de entradas disponibles y pasarlas al usuario. Si en el intervalo hasta que se
+decide por una la misma fue vendida la llamada a \call{RemoveTicketIfAvailable}
+avisará de la situación.
+
+\subsection{Comunicaciones indirectas - Colas de mensajes}
+Otra solución posible es utilizar colas de mensajes, un tipo de estructura que provee un mecanismo de
+comunicación indirecto, asincrónico, y escalable.
+Distintos productos proveen este mecanismo, uno de ellos es \type{Java Message Service}.
+Este tipo de software suele implementar controles transaccionales (concurrencia y recuperación)
+y cuenta con mecanismos de seguridad.
+
+Cuando un usuario comience la operación elegirá una entrada a comprar, luego de
+lo cual se le solicitará información de pago y demás. Luego de seleccionar el asiento,
+una estructura \type{HashMap} se encargará de gestionar la transacción, distinguiendo
+asientos ocupados y libres.
+
+Esta solución descarta el uso de semáforos porque no se comparte la estructura que maneja los mensajes.
+
+\subsection{Estructura de entradas vendidas o pendientes} \label{concurrenthm}
+Una estructura \type{HashMap} permite la inserción y la consulta en \BigO{1}. Además,
+por su funcionamiento, en la mayor parte de los casos de inserción los elementos
+se colocan el lugares disjuntos de memoria, y esto permite que dos hebras
+inserten de forma concurrente.
+
+\subsubsection{Un mapa concurrente}
+En particular imaginamos un tipo \type{ConcurrentHashMap}, que tiene un semáforo por cada espacio del vector (Figura \ref{fig:sistema}).
+
+Para cada inserción que se desee realizar calcula el \emph{hash} adecuado para el objeto,
+y realiza la inserción en el vector solo habiendo adquirido dicho semáforo.
+Devuelve el valor asociado previamente (o nulo si no existía).
+
+Supongamos además una operación \call{putIfAbsent}.
+Ella coloca un valor asociado a cierta clave \emph{solamente} si la clave no tiene ya un valor asociado.
+La operación se realiza calculando el \emph{hash} y luego,
+obteniendo el cerrojo para dicho espacio del vector,
+revisándolo e insertando si no existe un valor asociado.
+La operación tendrá como retorno el valor anterior del mapa, o nulo si no existía la clave.
+
+\begin{verbatim}
+i = CalcularIndiceConHash(clave)
+semaforos[i].Esperar();
+if (!mapa.contiene(clave))
+  r = map.insertar(clave, valor);
+else
+  r = nulo;
+endif
+semaforos[i].Indicar();
+return r
+\end{verbatim}
+
+Java presenta un primitivo que cumple con esta interfaz, que lleva el mismo nombre.
+
+En esta alternativa se posee una estructura \type{SoldTickets}, implementada
+como un \type{HashMap} concurrente.
+
+Cuando se inserta en una estructura \type{ConcurrentHashMap} la
+operación \emph{es previa a} la búsqueda \cite{javaspec}.
+Esto significa que toda operación de este último tipo que retorne luego de
+haber finalizado una operación de inserción operará con el último valor del mapa.
+
+\subsubsection{Detallado de la solución}\label{detallado-chm}
+
+\begin{figure}
+\centering{
+	\def\svgwidth{\linewidth}
+\input{img/sistema.pdf_tex}
+\caption{Se adquiere el cerrojo para escribir, pero no bloquea leer}
+\label{fig:sistema}
+}
+\end{figure}
+
+El mapa \type{SoldTickets} será de identificador de entrada a \type{Unit}.
+Este es un tipo \emph{unitario}, es decir que existe un único posible valor de este tipo, denotado \texttt{()}.
+Esto se debe a que el valor en sí es ignorado, solo importando si existe o no en el mapa algo asociado a la clave.
+Se convierte así al mapa en un conjunto de valores del tipo \type{IdEntrada}.
+
+Así, con operaciones como \call{putIfAbsent} es posible buscar una entrada y
+colocarla atómicamente\cite{javaspec} en la estructura, asegurándose de que
+ningún otra hebra pudo hacerlo, garantizando por lo tanto que la venta es segura.
+
+Una ventaja de esto es que la estructura ConcurrentHashMap solo bloquea cuando
+se opera con la misma clave (o al menos con un rango restringido) por lo que en
+una gran mayoría de los casos es posible operar de forma paralela, en
+comparación con bloquear la estructura con cada inserción, de cierta forma
+haciéndolas de manera secuencial.
+
+\subsubsection{Compra de múltiples entradas}
+La enorme mayoría de los clientes realizará la compra de \(m > 1\) entradas.
+Para lidiar con este caso es importante considerar que,
+si no es posible la compra de las \(m\) entradas,
+no queremos realizar una de \(k < m\).
+
+Para respetar la elección del cliente sería posible bloquear durante la reserva de las entradas,
+desbloqueando una vez que todas hayan sido reservadas.
+El problema de esta solución es que, con una alta probabilidad, las compras concurrentes no poseen entradas
+en común.
+
+Para cada entrada solicitada se intentará su colocación en \type{SoldTickets}.
+Si alguna de ellas falla deberán liberarse las reservadas anteriormente.
+Esto permite que la mayor parte de las operaciones funcionen de manera concurrente.
+
+\subsubsection{Venta a agencias}\label{venta-agencia}
+Las agencias serán capaces de comprar grandes cantidades de entradas para luego vender a discreción.
+Para el sistema, se comportarán igual que los compradores de múltiples entradas descritos anteriormente,
+con la diferencia de que a las agencias se les exigirá un mínimo de entradas para comprar y se les hará un descuento
+en su compra.
+
+\section{Planificación de la Venta}
+Al priorizar el tiempo de respuesta frente a los usuarios se procura atender a las solicitudes tan pronto como sea posible.
+Sin embargo, dadas las limitaciones físicas (menos CPUs que usuarios concurrentes) es inevitable que algunas acaben encolando.
+
+\subsection{First Come, First Serve}
+Una opción posible es encolar a estas solicitudes en una cola \emph{FIFO}, como se describe en la sección \ref{fcfs}.
+Esto implica que se dará trato a la solicitud mas antigua en primer lugar, por lo que el primer usuario en llegar será prioritario.
+Aunque esto mejora el tiempo de respuesta entra en conflicto con criterios de mayor prioridad,
+sea maximizar el ingreso total y la ocupación del estadio (ver capítulo \ref{cap:criterios}).
+
+%\subsection{Mayor venta reciente primero}
+\subsection{Mayor venta primero}\label{mayor-primero}
+
+Con el fin de maximizar los ingresos y la cantidad de entradas vendidas se organiza la cola de solicitudes mediante prioridades.
+Como prioridad de una solicitud se toma \emph{el opuesto} del valor total de la transacción.
+\[ p = -c_{venta}\].
+Esto garantiza que se dará servicio a la venta de mayor valor en primer lugar y, en particular,
+se atenderán primero las ventas de la mayor cantidad de entradas en el caso promedio (considere entradas del mismo precio).
+
+
+
+
+\section{Solución final}
+
+La solución detallada en la sección \ref{concurrenthm} será implementada, junto con la planificación descrita en \ref{mayor-primero}.
+La ventaja que ofrece esta estructura, permitiendo múltiples inserciones sin bloqueo (más allá de alguna excepción)
+es grande frente a la alternativa de efectivamente hacer secuenciales a las operaciones de manipulación de la estructura.
+
+Por otro lado, atender a las solicitudes de mayor ganancia primero permite maximizar los ingresos,
+y de esta forma se resuelven los primeros 3 criterios de optimización.
+
+Se implementa un chequeo de asientos aislados para satisfacer el cuarto criterio imposibilitando ventas que dejen un asiento en tal estado.
+Finalmente, se ofrece la posibilidad de los clientes con discapacidades de autenticarse como tal ante el sistema,
+permitiendo el acceso a entradas reservadas.
+
+\subsection{SoldTickets y Event}
+
+La solución planteada trabaja con tres estructuras de datos íntimamente relacionadas.
+Por un lado tenemos el concepto de \type{Event} (listado \ref{lst:event}), que no es más que que el espectáculo descrito en la sección \ref{recurso:espectaculo}, página \pageref{recurso:espectaculo}.
+Esta estructura representa no solo el nombre para el usuario (con el cuál podrá identificar al espectáculo) si no también el momento de ocurrencia.
+Finalmente posee además a la estructura \type{SoldTickets} asociada.
+
+\lstinputlisting[float,linerange={8-11,41-41}, caption=Event.java,label={lst:event}]{modelo/Event.java}
+
+Como se describe en en la sección \ref{concurrenthm}, \type{SoldTickets} (listado \ref{lst:soldtickets}) no es mucho más que un mapa (no obstante concurrente) a un tipo unitario
+\footnote{Debido a la falta de tipos unitarios en Java se elige al tipo Boolean como imagen}.
+Esta estructura permite confirmar la venta de cualquier entrada y, mediante el atributo \emph{validIds} permite identificar rápidamente las entradas válidas (disponibles o no).
+Nótese que, al no modificarse este segundo mapa, es posible usar un tipo no concurrente y mejorando el desempeño.
+
+\lstinputlisting[float,linerange={9-12,112-112}, caption=SoldTickets.java,label={lst:soldtickets}]{modelo/SoldTickets.java}
+
+
+\subsection{Protocolo}
+Se desarrolla un pequeño protocolo para la comunicación del servidor con los sistemas que accedan a él.
+En el mismo, cada respuesta al cliente se compone de lineas.
+La primera es un entero que representa la cantidad de lineas adicionales que serán transmitidas.
+
+Cada comunicación con él se realiza mediante sockets, como se indica en la figura \ref{fig:sistema}.
+Con cada nueva conexión se levanta una nueva hebra de servicio a la solicitud, \type{SocketReceiver}.
+Ella procesa la misma para interpretar el tipo.
+
+\subsubsection{GET}
+Estas solicitudes buscan información de algún tipo, ya sea funciones posibles o entradas disponibles para una función en particular.
+\begin{center}
+	\texttt{GET <id evento>}
+\end{center}
+
+En primer lugar se presentan aquellas funciones que no detalles un id de evento.
+En estos casos se muestra al solicitante un listado de los eventos disponibles para la venta,
+como se muestra en el algoritmo \ref{alg:listar-eventos}.
+
+\begin{algorithm}
+\caption{Listar los eventos disponibles por una solicitud GET}
+\label{alg:listar-eventos}
+\begin{algorithmic}[1]
+	\Require \emph{eventos} es un vector de \type{Event}
+\Procedure{listarEventos}{Socket s}
+\State s.put(``Los eventos disponibles son'');
+\ForAll{(i, evento) $\in$ eventos}
+	\State s.put(``\{i\}) \{evento.getNombre()\} \{evento.getCuando()\}'');
+\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+El algoritmo \ref{alg:listar-entradas} muestra la respuesta del sistema cuando se detalla un id de evento.
+En este caso se representa, para el evento determinado, qué entras están disponibles (mediante id),
+    así como su precio.
+Para lograr esto se filtra de la colección de entradas válidas \emph{validIds} aquellas que ya hayan sido
+    vendidas (buscándolas en \emph{asientosOcupados}).
+
+\begin{algorithm}
+\caption{Listar las entradas disponibles}
+\label{alg:listar-entradas}
+\begin{algorithmic}[1]
+\Procedure{listar}{Socket s, Tokens solicitud}
+	\State s.put(``Las entradas disponibles son: '');
+	\State idEvent $\gets$ solicitud.nextToken()
+	\State evento $\gets$ events[idEvento]
+	\ForAll{(entrada, costo) $\in$ evento.soldTickets.entradasDisponibles()}
+		\State s.put(``\{entrada\}) \$\{costo\}'');
+	\EndFor
+\EndProcedure
+\Statex
+\Require \emph{st.validIds} es un mapa de id entrada a costo (vendidas o no)
+\Require \emph{st.asientosOcupados} es el mapa descrito en \ref{concurrenthm}
+\Procedure{entradasDisponibles}{SoldTickets st}
+	\ForAll{(idEntrada, costo) $\in$ st.validIds}
+	\If{st.asientosOcupados.get(entrada) $=$ \textbf{null}}
+		\State \textbf{yield} (idEntrada, costo)
+	\EndIf
+	\EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{POST}
+Una solicitud de este tipo busca la compra de una o más entradas
+Para ello debe especificar el id del evento y cada id de la entrada que busque comprar.
+
+\begin{center}
+	\texttt{POST <tipo usuario>\ <id evento>\ <id asiento1>[, <id asiento2>[, ...]]}
+\end{center}
+
+\begin{samepage}
+Además especificará un tipo usuario \(t = 0, 1, 2\) con la siguiente correspondencia.
+\begin{description}[align=left,noitemsep,labelindent=\parindent]
+	\item[0:] Usuarios con discapacidades.
+	\item[1:] Agencias.
+	\item[2:] Otros usuarios.
+\end{description}
+\end{samepage}
+
+Autenticarse con \(t = 1\) permite acceder a un descuento (ver \ref{venta-agencia}).
+Con \(t=0\) el usuario accede a locaciones reservadas (con facilidad de acceso, etc.~).
+
+Deberá, para el producto final, incluir adicionalmente un \emph{token} de usuario para verificar la autenticación en la plataforma.
+Esto con el fin de poder dar uso a la información de pago vinculada a su cuenta.
+Pero, con el fin de simplificar la simulación, se obvia este paso hasta la entrega final del producto.
+
+Cuando el sistema recibe una solicitud POST comienza por validar los argumentos, obteniendo un \type{idEvento} y una colección de \type{idAsiento}.
+Una vez obtenida la estructura \type{Event} puede obtener todas las estructuras \type{Ticket}, lo que permite calcular el valor monetario de la solictud.
+Estos datos, junto al socket de comunicación, se colocan en una \type{PriorityBlockingQueue} nombrada \emph{ticketRequestQueue}.
+
+\subsection{Seller y TicketRequest}
+
+La aplicación posee algunos hilos de clase \type{Seller}, los cuales se encargan de procesar la cola de ventas \emph{ticketRequestQueue}.
+Estos se encargan (listado \ref{lst:seller}) de tomar el próximo valor de la cola (si lo hay), bloqueándose de forma contraria, hasta que aparezca un nuevo valor.
+Los datos se procesan como se describe en la sección \ref{detallado-chm}, y se muestra el método \emph{make} en el listado \ref{lst:tkrqst}.
+
+\lstinputlisting[float,firstline=17, lastline=26,label={lst:seller},caption=Seller.java]{servidor/Seller.java}
+\lstinputlisting[float,linerange={31-37,39-43,45-53,61-62},caption=TicketRequest.java,label={lst:tkrqst}]{servidor/TicketRequest.java}
+
+\subsection{Arquitectura de hilos}\label{arq-hilos}
+
+Para asegurar que las ventas siempre sean procesadas es necesario que,
+siempre que \emph{ticketRequestQueue} no esté vacía,
+exista un hilo de clase \type{Seller} en ejecución.
+
+Por otro lado, también queremos que las nuevas conexiones al sistema sean atendidas, mediante un hilo \type{SocketReceiver}.
+Para asegurar que ambas tareas puedan ser atendidas en todo momento se diseña un esquema de tres prioridades.
+La misma se ve representada en la figura \ref{fig:hilos}.
+
+Sea \(n\) la cantidad de procesadores disponibles.
+Uno de los hilos del sistema es el encargado de recibir las nuevas conexiones y crear el hilo \type{SocketReceiver} correspondiente.
+Siendo \(m = n - 1\) la cantidad de procesadores restante, tenemos un \emph{pool} de \(m\) hilos de prioridad media, sobre el cual se levantan estos últimos.
+Finalmente, existen \(m\) hilos \type{Seller}, con el matiz de que uno de ellos tiene prioridad alta, y los demás baja\footnote{La proporción puede ser configurada}.
+Lo que esto permite es que siempre exista un hilo de venta en ejecución (por su alta prioridad), procesando las solicitudes encoladas,
+pero que al mismo tiempo siempre puedan ejecutar \(m - 1\) hilos \type{SocketReceiver}.
+
+Notase que el procesamiento de un elemento de la cola de ventas es más eficiente que el procesamiento de una conexión por \type{SocketReceiver}.
+Cada ítem de la cola de ventas posee una colección de entradas que deben ser colocadas en el mapa descrito en \ref{detallado-chm}.
+Esta operación tiene un orden de \(n\BigO{1} = \BigO{n} \) con la venta de \(n\) entradas\footnote{El eventual bloqueo del mapa cambiará su rendimiento, pero amortizamos}.
+Por otro lado, la respuesta a una solicitud por \type{SocketReceiver} implica no solo la recepción de datos por el puerto,
+si no además el \emph{parseo} de la solicitud, y eventualmente el chequeo de validez de las entradas.
+
+
+\begin{figure}
+\centering{
+	\def\svgwidth{0.6\linewidth}
+\input{img/hilos.pdf_tex}
+\caption{\nameref{arq-hilos}, prioridades \(\uparrow , \rightarrow , \downarrow \)}
+\label{fig:hilos}
+}
+\end{figure}
+
+El esquema incluso presenta ventajas en casos de ocio.
+En los casos en que la cola de ventas sea vacía, \(m\) hilos procesarán las conexiones activas.
+Cuando no existan conexiones activas, \(m\) hilos procesarán rápidamente las ventas encoladas.
+Finalmente, cuando el sistema no posea conexiones ni ventas encoladas, no existirán hilos \type{SocketReceiver} y los hilos \type{Seller} se encontrarán bloqueados.
+En tal caso el sistema solo tendrá un hilo de ejecución (\emph{main thread}) encargado de atender las nuevas conexiones que pudieran llegar.
+

@@ -1,0 +1,10 @@
+
+\section{Hardware pass-through}
+El método de virtualización de PCI passthrough sigue la línea que marcan la virtualización asistida por hardware (Intel VT-x y AMD-V) y la para-virtualización, con el fin común de permitir mayor performance a la máquina virtual.
+En este caso, se da al sistema huésped acceso dedicado y exclusivo al dispositivo real del anfitrión, permitiéndole comunicarse directamente con él. La ventaja es clara, y es que de esta manera el costo (overhead) del acceso al hardware es mínimo.
+Las desventajas de este sistema, sin embargo, son varias, por lo que debe analizarse la situación puntual para decidir si es adecuada. En primer lugar, se debe poseer soporte del hardware (Intel VT-d y AMD-Vi). Además, según como estén agrupados los dispositivos (según sus conexiones a qué controladoras), podemos perder acceso a varios de ellos ya que es necesario dar al sistema huésped el control total de un grupo, y no es posible elegir dispositivos individuales.
+
+\section{Configuración de las MVs}
+Se crean máquinas que corren Ubuntu-64bits, con \texttt{openjdk-11.0.2}, para permitir la ejecución de archivos jar. Se adjunta la imagen de la misma, y estos archivos.
+Luego se configura la red para permitir la comunicación entre sí. Para esto se crea una red Host-only (\texttt{vboxnet0}), y se agrega a cada máquina un adaptador conectado a ella. Con \texttt{ip addr show} encontramos la ip de cada máquina, para abrir el puerto adecuado. Esto se realiza corriendo los programas java servidor.jar en una de ellas y \texttt{cliente.jar <ip>} en las demás.
+

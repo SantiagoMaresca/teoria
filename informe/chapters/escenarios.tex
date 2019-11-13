@@ -1,0 +1,64 @@
+\section{Compradores reales}
+
+Para simular la interacción con usuarios reales se genera un archivo de pruebas que en tiempos aleatorios
+presenta un nuevo pedido por parte de un cliente.
+La cantidad de entradas es también generada de forma aleatoria, entre 1 y 10.
+El tipo de usuarios en este caso es \(t=2\), y no hay asientos reservados para clientes con discapacidades.
+
+\subsubsection{Tiempo de respuesta}
+El tiempo entre la solicitud de una entrada y la respuesta correspondiente se conoce como el \emph{tiempo de respuesta}.
+Para cada solicitud realizada por los clientes se medirá el tiempo de respuesta.
+Finalizada la simulación se calculará el promedio de este.
+
+Además del promedio se medirá la relación entre \(t_i\) y \(n_i\), donde \(t_i\) es el tiempo de respuesta para el i-ésimo
+cliente y \(n_i\) es la cantidad de entradas que solicita.
+
+Se distinguirá para este último caso entre las ventas con éxito (considerando solo las interacciones que finalicen en concretar la venta)
+y las demás interacciones (que finalizan con un error por \emph{entrada no disponible}).
+
+\section{Compradores concurrentes aleatorios} \label{escenario-tiempoespera}
+Considerando un único espectáculo, se introducen clientes al sistema.
+Cada uno de ellos tiene una cantidad de entradas que desea comprar
+(sea \(n_i\)), sin importar su ubicación.
+
+Estos intentan realizar la compra de asientos cualesquiera en el espectáculo.
+En el caso de que la compra no sea exitosa (otro cliente adquirió primero) se procederá a intentarlo otra vez.
+Se introducirán en total \(m\) clientes, donde \(N = \sum_{i=1}^{m} n_i\)
+es la cantidad total de entradas disponibles para el evento\footnote{
+	Para cada cliente se calcula un número aleatorio con distribución uniforme.
+	De esta forma 
+	\(n_i \in [1, 8] \wedge m \in [\frac{N}{8}, N]\).
+}.
+De esta forma aseguramos que cada cliente logra finalizar su interacción habiendo adquirido las entradas que deseaba.
+
+\begin{figure}
+\end{figure}
+\begin{figure}
+\centering{
+	\def\svgwidth{\linewidth}
+\input{img/escenario1.pdf_tex}
+\caption{\nameref{escenario-tiempoespera}}
+\label{fig:escenario1}
+}
+\end{figure}
+
+En esta interacción los clientes ingresan de forma concurrente al sistema, y su orden particular dependerá de la carga
+particular del sistema en que ejecute la planificación.
+
+\subsubsection{Tiempo de respuesta}
+Una vez más se mide el tiempo de respuesta de los usuarios, realizando también un análisis de la relación entre el tiempo
+de respuesta y la cantidad de entradas solicitada.
+
+La hipótesis es que las ventas de mayor valor tendrán un tiempo de respuesta relativamente menor.
+A pesar de su mayor tiempo de procesamiento serán atendidas previamente.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Carga del sistema}
+Para un evento con \(n\) entradas en total se introducen \(m\) clientes al sistema, donde \(n < m\).
+Al igual que en la sección \ref{escenario-tiempoespera}, los clientes intentarán
+la compra de un conjunto aleatorio de entradas, re-intentando en caso de una falla.
+
+\subsubsection{Tiempo de respuesta}
+Al igual que en la sección \ref{escenario-tiempoespera}, medimos el tiempo de respuesta medio de las solicitudes,
+y su relación para cada cliente con la cantidad de entradas.
