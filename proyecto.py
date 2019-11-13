@@ -140,6 +140,20 @@ class TestKDTree(unittest.TestCase):
         self.assertEqual(makeKDRTree([self.points[i] for i in [0]], self.r, dim=4), (self.points[0],))
 
 
+def main():
+    """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
+       Promediando los tiempos para 100 búsquedas positivas y 100 búsquedas negativas"""
+    print("Preparando la simulación...")
+    random.seed(759334)
+    print("Construyendo el árbol...")
+
+    for k in [5, 10, 15, 20]:
+        for r in range(1, 5+1):
+            # for n in [10**5, 5 * 10**5, 10**6]:
+            for n in [10**2]:
+                print("Construyendo el árbol...")
+
 
 if __name__ == '__main__':
     unittest.main()
+    # main()
