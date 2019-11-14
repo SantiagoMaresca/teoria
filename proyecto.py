@@ -159,15 +159,34 @@ def main():
        Promediando los tiempos para 100 búsquedas positivas y 100 búsquedas negativas"""
     print("Preparando la simulación...")
     random.seed(759334)
-    print("Construyendo el árbol...")
+
+    N_MAX = 10 ** 2
+
 
     for k in [5, 10, 15, 20]:
-        for r in range(1, 5+1):
-            # for n in [10**5, 5 * 10**5, 10**6]:
-            for n in [10**2]:
-                print("Construyendo el árbol...")
+        print(f'Construyendo el conjunto de puntos para k={k}')
+        conjunto_puntos_all = [tuple(random.randint(0, 100+1) for j in range(k)) for i in range(N_MAX)]
+        for n in [10**2]:
+        # for n in [10**5, 5 * 10**5, 10**6]:
+            conjunto_puntos = conjunto_puntos_all[:n]
+            for r in range(1, 5+1):
+                print(f'Construyendo el árbol con r={r} y n={n}')
+                kdrTree = makeKDRTree(conjunto_puntos[:n], r)
+
+                print("Realizando 100 búsquedas positivas...")
+                for ign in range(100):
+                    n_pos = random.choice(conjunto_puntos)
+                    assert searchKDRTree(kdrTree, r, n_pos)
+
+                print("Realizando 100 búsquedas negativas...")
+                for ign in range(100):
+                    n_neg = conjunto_puntos[0]
+                    while (n_neg in conjunto_puntos):
+                        n_neg = tuple(random.randint(0, 100+1) for j in range(k))
+
+                    assert not searchKDRTree(kdrTree, r, n_neg)
 
 
 if __name__ == '__main__':
-    unittest.main()
-    # main()
+    # unittest.main()
+    main()
