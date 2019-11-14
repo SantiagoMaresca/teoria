@@ -3,6 +3,8 @@ import random
 import unittest
 from utils import count_elapsed_time
 
+import numpy as np
+
 def at(point, i):
     return point[i % len(point)]
 
@@ -81,6 +83,17 @@ def searchKDRTree(kdrTree, r, point, dim = 0):
 
     return False
 
+def prom_sin_outliers(datos, m = 2):
+    data = np.array(datos)
+    if (np.std(data) == 0):
+        print("datos:", datos)
+        print("##############################")
+    data = data[abs(data - np.mean(data)) < m * np.std(data)]
+    prom =  np.mean(data)
+
+    return prom
+
+
 makeKDRTreeTiempo = count_elapsed_time(makeKDRTree)
 searchKDRTreeTiempo = count_elapsed_time(searchKDRTree)
 
@@ -106,14 +119,17 @@ def main():
                 arch.write(f'{k};{r};{n};arbol;{tiempo}\n')
 
                 print("Realizando 100 búsquedas positivas...")
+                tiempos = []
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
                     if not val:
                         assert False # Algo falló
-                    arch.write(f'{k};{r};{n};buscar_pos;{tiempo}\n')
+                    tiempos.append(tiempo)
+                arch.write(f'{k};{r};{n};buscar_pos;{prom_sin_outliers(tiempos)}\n')
 
                 print("Realizando 100 búsquedas negativas...")
+                tiempos = []
                 for ign in range(100):
                     n_neg = tuple(random.randint(0, 100+1) for j in range(k))
                     while (n_neg in conjunto_puntos):
@@ -122,7 +138,8 @@ def main():
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_neg)
                     if val:
                         assert False # Algo falló
-                    arch.write(f'{k};{r};{n};buscar_neg;{tiempo}\n')
+                    tiempos.append(tiempo)
+                arch.write(f'{k};{r};{n};buscar_neg;{prom_sin_outliers(tiempos)}\n')
     arch.close()
 
 
