@@ -25,11 +25,9 @@ def makeKDRTree(points, r, dim = 0):
 {Mejor de los casos: points es nulo o es una tupla de largo uno : 
 el algoritmo tendrá orden de ejecución : O(1).
 Caso promedio : 
-
-
-
 }
 
+\begin{document}
 	\section{Búsqueda de un Árbol-KDR}
 	\begin{lstlisting}[language=Python]
 	def searchKDRTree(kdrTree, r, point, dim = 0):
@@ -49,14 +47,14 @@ Caso promedio :
 		return False
 		\end{lstlisting}
 	\textbf{ Orden de tiempo de ejecución del algoritmo : }
-		{Mejor de los casos: points es nulo o es una tupla de largo uno : 
+		{Mejor de los casos: el arbol es nulo o es tiene un único "nodo" : 
 		el algoritmo tendrá orden de ejecución : O(1).
-		Caso promedio : 
+		Caso promedio : T(n)= 2^r (T(n/2^r)+ O(r))
 		
 		
 		
 		}
-
+end{document}
 
 % \begin{algorithm}
 % \caption{Busca una tupla de largo R en un arbol KDR}
