@@ -1,19 +1,83 @@
-\section{Creación de un Árbol-KDR}
 
-\begin{algorithm}
-\caption{Crea un arbol KDR}
-\label{alg:crear-kdr}
-\begin{algorithmic}[1]
-	\Require \emph{eventos} es un vector de \type{Event}
-\Procedure{listarEventos}{Socket s}
-\State s.put(``Los eventos disponibles son'');
-\ForAll{(i, evento) $\in$ eventos}
-	\State s.put(``\{i\}) \{evento.getNombre()\} \{evento.getCuando()\}'');
-\EndFor
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
+\section{Armado de un Árbol-KDR}
+\begin{lstlisting}[language=Python]
+	
+def makeKDRTree(points, r, dim = 0):
+	if not points:
+		return None # Empty trees are None
+	elif len(points) == 1:
+		return tuple(points) # Leaf nodes have one point.
 
-El algoritmo \ref{alg:crear-kdr} muestra la respuesta del sistema cuando se detalla un id de evento.
-En este caso se representa, para el evento determinado, qué entras están disponibles (mediante id),
-    así como su precio.
+	# Obtenemos las r medianas, para las dimensiones dim, dim+1, ..., dim+(r-1)
+	medians = getMedians(points, r, dim)
+
+	partitions = [None] * (2**r + 1) # Tendremos 2**r particiones (hijos)
+	partitions[0] = medians
+	i = 1
+	for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
+		partition = [p for p in points if matches_criteria(criteria, medians, p, dim)] # n iteraciones
+		partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points))
+		i += 1
+
+	return tuple(partitions)
+	\end{lstlisting}
+\textbf{ Orden de tiempo de ejecución del algoritmo : }
+{Mejor de los casos: points es nulo o es una tupla de largo uno : 
+el algoritmo tendrá orden de ejecución : O(1).
+Caso promedio : 
+
+
+
+}
+
+	\section{Búsqueda de un Árbol-KDR}
+	\begin{lstlisting}[language=Python]
+	def searchKDRTree(kdrTree, r, point, dim = 0):
+		if (kdrTree is None):
+			return False
+		elif len(kdrTree) == 1:
+			return kdrTree[0] == point
+		medians = kdrTree[0]
+		i = 1
+		for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
+			if (matches_criteria(criteria, medians, point, dim)):
+				# go to this subtree
+				chosen_subtree = kdrTree[i]
+				return searchKDRTree(chosen_subtree, r, point, dim+r)
+			i += 1
+	
+		return False
+		\end{lstlisting}
+	\textbf{ Orden de tiempo de ejecución del algoritmo : }
+		{Mejor de los casos: points es nulo o es una tupla de largo uno : 
+		el algoritmo tendrá orden de ejecución : O(1).
+		Caso promedio : 
+		
+		
+		
+		}
+
+
+% \begin{algorithm}
+% \caption{Busca una tupla de largo R en un arbol KDR}
+% \label{alg:busqueda-kdr}
+% \begin{algorithmic}[1]
+% 	\Require El árbol kdr debe estar creado
+% \Procedure{searchKDRTree}{kdrTree, r, point, dim = 0}
+% \If {kdTree == nulo}
+% \State {devolver Falso}
+% \Else{}
+% \If {kdTree == nulo}
+% \State devolver kdrTree[0] == point
+
+% medians =kdrTree[0]
+% \ForAll{(criteria,) $\in$ productoCartesiano(false,true,r)}
+% 	\State s.put(``\{i\}) \{evento.getNombre()\} \{evento.getCuando()\}'');
+% \EndFor
+% \EndProcedure
+% \end{algorithmic}
+% \end{algorithm}
+
+% El algoritmo \ref{alg:crear-kdr} muestra la respuesta del sistema cuando se detalla un id de evento.
+% En este caso se representa, para el evento determinado, qué entras están disponibles (mediante id),
+%     así como su precio.

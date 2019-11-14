@@ -1,6 +1,4 @@
-env/lib
-env/scripts
-env/pyenv.cfg
-env/pyvenv.cfg
-*~
+env/Lib
+env/Scripts
 __pycache__/
+env/pyvenv.cfg
