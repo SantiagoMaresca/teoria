@@ -1,7 +1,8 @@
 import itertools as it
 import random
 import unittest
-from utils import count_elapsed_time
+from utils import count_elapsed_time, gen_puntos_negativos
+from time import time
 
 import numpy as np
 
@@ -86,8 +87,7 @@ def searchKDRTree(kdrTree, r, point, dim = 0):
 def prom_sin_outliers(datos, m = 2):
     data = np.array(datos)
     if (np.std(data) == 0):
-        print("datos:", datos)
-        print("##############################")
+        return datos[0]
     data = data[abs(data - np.mean(data)) < m * np.std(data)]
     prom =  np.mean(data)
 
@@ -95,7 +95,6 @@ def prom_sin_outliers(datos, m = 2):
 
 
 makeKDRTreeTiempo = count_elapsed_time(makeKDRTree)
-searchKDRTreeTiempo = count_elapsed_time(searchKDRTree)
 
 def main():
     """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
@@ -110,7 +109,6 @@ def main():
     for k in [5, 10, 15, 20]:
         print(f'Construyendo el conjunto de puntos para k={k}')
         conjunto_puntos_all = [tuple(random.randint(0, 100+1) for j in range(k)) for i in range(N_MAX)]
-        #for n in [10**2]:
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
             for r in range(1, 5+1):
@@ -119,27 +117,24 @@ def main():
                 arch.write(f'{k};{r};{n};arbol;{tiempo}\n')
 
                 print("Realizando 100 búsquedas positivas...")
-                tiempos = []
+                start_time = time()
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
-                    tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
+                    val = searchKDRTree(kdrTree, r, n_pos)
                     if not val:
                         assert False # Algo falló
-                    tiempos.append(tiempo)
-                arch.write(f'{k};{r};{n};buscar_pos;{prom_sin_outliers(tiempos)}\n')
+                tiempo = (time() - start_time)/100
+                arch.write(f'{k};{r};{n};buscar_pos;{tiempo}\n')
 
                 print("Realizando 100 búsquedas negativas...")
-                tiempos = []
-                for ign in range(100):
-                    n_neg = tuple(random.randint(0, 100+1) for j in range(k))
-                    while (n_neg in conjunto_puntos):
-                        n_neg = tuple(random.randint(0, 100+1) for j in range(k))
-
-                    tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_neg)
+                puntos_negativos = list(gen_puntos_negativos(k, conjunto_puntos))
+                start_time = time()
+                for n_neg in puntos_negativos:
+                    val = searchKDRTree(kdrTree, r, n_neg)
                     if val:
                         assert False # Algo falló
-                    tiempos.append(tiempo)
-                arch.write(f'{k};{r};{n};buscar_neg;{prom_sin_outliers(tiempos)}\n')
+                tiempo = (time() - start_time)/100
+                arch.write(f'{k};{r};{n};buscar_neg;{tiempo}\n')
     arch.close()
 
 
