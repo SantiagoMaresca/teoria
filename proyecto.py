@@ -111,6 +111,7 @@ def main():
     for k in [5, 10, 15, 20]:
         print(f'Construyendo el conjunto de puntos para k={k}')
         conjunto_puntos_all = [tuple(random.randint(0, 100+1) for j in range(k)) for i in range(N_MAX)]
+        print(f"Large tree...{conjunto_puntos_all[0]}")
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
             for r in range(1, 5+1):
@@ -125,6 +126,7 @@ def main():
                 tiempos = []
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
+                    arch.write(f'A buscar {n_pos}\n')
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
                     if not val:
                         assert False # Algo falló
