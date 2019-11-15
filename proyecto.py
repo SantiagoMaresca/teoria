@@ -95,6 +95,7 @@ def prom_sin_outliers(datos, m = 2):
 
 
 makeKDRTreeTiempo = count_elapsed_time(makeKDRTree)
+makeKDTreeTiempo = count_elapsed_time(makeKDTree)
 
 def main():
     """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
@@ -102,7 +103,7 @@ def main():
     print("Preparando la simulación...")
     random.seed(759334)
 
-    N_MAX = 10 ** 2
+    N_MAX = 10 ** 6
 
     arch = open("datos.csv", "w")
     arch.write("k;r;n;tipo;tiempo\n")
@@ -114,7 +115,10 @@ def main():
             for r in range(1, 5+1):
                 print(f'Construyendo el árbol con r={r} y n={n}')
                 tiempo, kdrTree = makeKDRTreeTiempo(conjunto_puntos[:n], r)
-                arch.write(f'{k};{r};{n};arbol;{tiempo}\n')
+                arch.write(f'{k};{r};{n};arbolkdr;{tiempo}\n')
+
+                tiempo, kdTree = makeKDTreeTiempo(conjunto_puntos[:n])
+                arch.write(f'{k};{r};{n};arbolkd;{tiempo}\n')
 
                 print("Realizando 100 búsquedas positivas...")
                 start_time = time()
