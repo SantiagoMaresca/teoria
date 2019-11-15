@@ -1,4 +1,5 @@
 from proyecto import *
+import sys
 
 class TestKDTree(unittest.TestCase):
     def setUp(self):
@@ -18,11 +19,11 @@ class TestKDTree(unittest.TestCase):
         self.r = 2
 
     def test_r_as_one(self):
-        random.seed(759334)
+        random.seed(456789)
         print("Large point dataset...")
         many_points = [tuple(random.randint(0, 100+1) for j in range(5)) for i in range(10**5)]
         print(f"Large tree...")
-        many_r = 1
+        many_r = 4
         kdrTree = makeKDRTree(many_points[:], many_r)
         print("Large search...")
         for point in many_points:
@@ -35,12 +36,9 @@ class TestKDTree(unittest.TestCase):
 
     def test_large_tree(self):
         random.seed(8)
-        print("Large point dataset...")
         many_points = [tuple(random.randint(0, 50) for j in range(20)) for i in range(1000)]
-        print("Large tree...")
         many_r = 5
         kdrTree = makeKDRTree(many_points[:], many_r)
-        print("Large search...")
         for point in many_points:
             self.assertTrue(searchKDRTree(kdrTree, many_r, point))
         for point in (tuple(random.randint(0, 50) for j in range(20)) for i in range(10000)):
@@ -92,4 +90,5 @@ class TestKDTree(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    sys.setrecursionlimit(5_000)
     unittest.main()
