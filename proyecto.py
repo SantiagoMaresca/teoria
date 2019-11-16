@@ -1,7 +1,7 @@
 import itertools as it
 import random
 import unittest
-from utils import count_elapsed_time, gen_puntos_negativos
+from utils import count_elapsed_time, gen_puntos_negativos, puntos_aleatorios_muestra
 from time import time
 
 import numpy as np
@@ -48,22 +48,30 @@ def matches_criteria(criteria, medians, point, dim):
             return False
     return True
 
-def makeKDRTree(points, r, dim = 0):
+def makeKDRTree(points, r, dim = 0, level = 0):
+    """La lista `points` no puede contener duplicados"""
     if not points:
         return None # Empty trees are None
     elif len(points) == 1:
         return tuple(points) # Leaf nodes have one point.
 
+    # if (level > 40):
+    #     print(f"level={level},n={points},dim={dim}")
+
     # Obtenemos las r medianas, para las dimensiones dim, dim+1, ..., dim+(r-1)
     medians = getMedians(points, r, dim)
-
     partitions = [None] * (2**r + 1) # Tendremos 2**r particiones (hijos)
     partitions[0] = medians
-    i = 1
-    for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-        partition = [p for p in points if matches_criteria(criteria, medians, p, dim)] # n iteraciones
-        partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points[0]))
-        i += 1
+    partitions_points = []
+    criterias = list(it.product([False, True], repeat = r))
+    for criteria in criterias:  # 2^r iteraciones
+        partitions_points.append([p for p in points if matches_criteria(criteria, medians, p, dim)]) # n iteraciones
+        # if (level > 40):
+        #     print(f"CHILD{len(partitions_points)}={partitions_points[-1]}")
+
+    for i in range(len(partitions_points)):
+        new_dim = (dim+r) % len(points[0])
+        partitions[i+1] = makeKDRTree(partitions_points[i], r, new_dim, level+1)
 
     return tuple(partitions)
 
@@ -110,7 +118,7 @@ def main():
     arch.write("k;r;n;tipo;tiempo\n")
     for k in [5, 10, 15, 20]:
         print(f'Construyendo el conjunto de puntos para k={k}')
-        conjunto_puntos_all = [tuple(random.randint(0, 100+1) for j in range(k)) for i in range(N_MAX)]
+        conjunto_puntos_all = puntos_aleatorios_muestra(k, N_MAX)
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
             for r in range(1, 5+1):
@@ -125,6 +133,7 @@ def main():
                 tiempos = []
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
+                    arch.write(f'A buscar {n_pos}\n')
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
                     if not val:
                         assert False # Algo falló
