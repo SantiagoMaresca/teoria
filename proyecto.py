@@ -136,7 +136,6 @@ def main():
                 tiempos = []
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
-                    arch.write(f'A buscar {n_pos}\n')
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
                     if not val:
                         assert False # Algo falló
