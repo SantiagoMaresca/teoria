@@ -45,7 +45,7 @@ class TestKDTree(unittest.TestCase):
 
     def test_recursion_r_four(self):
         random.seed(759334)
-        many_points = puntos_aleatorios_muestra(5, 10**5)
+        many_points = puntos_aleatorios_muestra(5, 10_000)
         self.arbol_buscando_con(many_points, 4, 5)
 
     def arbol_buscando_con(self, points, r, k):
@@ -57,6 +57,11 @@ class TestKDTree(unittest.TestCase):
                 self.assertTrue(searchKDRTree(kdrTree, r, point))
             else:
                 self.assertFalse(searchKDRTree(kdrTree, r, point))
+    
+    def test_get_medianas(self):
+        calc_medians = getMedians([(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)], 2, 2)
+        exp_medians = [38, 24]
+        self.assertCountEqual(calc_medians, exp_medians)
 
     def test_mediana_minima(self):
         many_points = [(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)]
