@@ -49,6 +49,7 @@ def matches_criteria(criteria, medians, point, dim):
     return True
 
 def makeKDRTree(points, r, dim = 0, level = 0):
+    """La lista `points` no puede contener duplicados"""
     if not points:
         return None # Empty trees are None
     elif len(points) == 1:
