@@ -9,6 +9,7 @@ class TestUtils(unittest.TestCase):
 
 class TestKDTree(unittest.TestCase):
     def setUp(self):
+        print(f"In method {self._testMethodName}")
         self.points = [
             (33, 23, 36, 47, 43),
             (12, 3, 31, 39, 4),
@@ -39,35 +40,30 @@ class TestKDTree(unittest.TestCase):
 
     def test_large_tree(self):
         random.seed(8)
-        many_points = list(set(tuple(random.randint(0, 50) for j in range(20)) for i in range(10_000)))
-        many_r = 5
-        kdrTree = makeKDRTree(many_points[:], many_r)
-        for point in many_points:
-            self.assertTrue(searchKDRTree(kdrTree, many_r, point))
-        for point in (tuple(random.randint(0, 50) for j in range(20)) for i in range(10000)):
-            if point in many_points:
-                self.assertTrue(searchKDRTree(kdrTree, many_r, point))
-            else:
-                self.assertFalse(searchKDRTree(kdrTree, many_r, point))
+        many_points = list(set(tuple(random.randint(0, 50) for j in range(20)) for i in range(5_000)))
+        self.arbol_buscando_con(many_points, 5, 20)
 
     def test_recursion_r_four(self):
-        print("recursion_r_four")
         random.seed(759334)
-        many_points = puntos_aleatorios_muestra(5, 10**5)
+        many_points = puntos_aleatorios_muestra(5, 5_000)
         self.arbol_buscando_con(many_points, 4, 5)
 
     def arbol_buscando_con(self, points, r, k):
         kdrTree = makeKDRTree(points[:], r)
         for point in points:
             self.assertTrue(searchKDRTree(kdrTree, r, point))
-        for point in (tuple(random.randint(0, 50) for j in range(k)) for i in range(10000)):
+        for point in (tuple(random.randint(0, 50) for j in range(k)) for i in range(10_000)):
             if point in points:
                 self.assertTrue(searchKDRTree(kdrTree, r, point))
             else:
                 self.assertFalse(searchKDRTree(kdrTree, r, point))
+    
+    def test_get_medianas(self):
+        calc_medians = getMedians([(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)], 2, 2)
+        exp_medians = [38, 24]
+        self.assertCountEqual(calc_medians, exp_medians)
 
     def test_mediana_minima(self):
-        print("test_mediana_minima")
         many_points = [(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)]
         self.arbol_buscando_con(many_points, 4, 5)
 
@@ -80,7 +76,7 @@ class TestKDTree(unittest.TestCase):
     def test_search(self):
         kdrTree = makeKDRTree(self.points[:], self.r)
         random.seed(759334)
-        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(10000)):
+        for point in (tuple(random.randint(0, 50) for j in range(5)) for i in range(10_000)):
             if point in self.points:
                 self.assertTrue(searchKDRTree(kdrTree, self.r, point))
             else:

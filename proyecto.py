@@ -34,8 +34,9 @@ def getMedians(points, r, dim):
     """Se obtienen las r medianas desde dim"""
     medians = [None] * r
     for i in range(r):
-        points.sort(key = lambda p: at(p, dim+i))
-        medians[i] = at(points[len(points) // 2], dim+i)
+        points_d = list(set(map(lambda p: at(p, dim+i), points)))
+        points_d.sort()
+        medians[i] = points_d[len(points_d) // 2]
     return medians
 
 def matches_criteria(criteria, medians, point, dim):
