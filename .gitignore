@@ -3,3 +3,4 @@ env/Scripts
 __pycache__/
 env/pyvenv.cfg
 datos.csv
+*~
