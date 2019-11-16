@@ -10,7 +10,9 @@ def at(point, i):
     return point[i % len(point)]
 
 def searchKDTree(kdTree, point, dim = 0):
-    if len(kdTree) == 1:
+    if not kdTree:
+        return False
+    elif len(kdTree) == 1:
         return kdTree[0] == point
     nodeValue, left, right = kdTree
     nextDim = (dim + 1) % len(point)
@@ -22,10 +24,10 @@ def makeKDTree(points, dim = 0):
         return None # Empty trees are None
     elif len(points) == 1:
         return tuple(points) # Leaf nodes have one point.
-    points.sort(key = lambda p: p[dim])
-    medianIndex = len(points) // 2
-    median = points[medianIndex][dim]
-    nextDim = (dim + 1) % len(points[medianIndex])
+    points_d = list(set(map(lambda p: p[dim], points)))
+    points_d.sort()
+    median = points_d[len(points_d) // 2]
+    nextDim = (dim + 1) % len(points[0])
     left = [p for p in points if p[dim] < median]
     right = [p for p in points if p[dim] >= median]
     return (median, makeKDTree(left, nextDim), makeKDTree(right, nextDim))

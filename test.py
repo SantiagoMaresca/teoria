@@ -50,13 +50,17 @@ class TestKDTree(unittest.TestCase):
 
     def arbol_buscando_con(self, points, r, k):
         kdrTree = makeKDRTree(points[:], r)
+        kdTree = makeKDTree(points[:])
         for point in points:
             self.assertTrue(searchKDRTree(kdrTree, r, point))
+            self.assertTrue(searchKDTree(kdTree, point))
         for point in (tuple(random.randint(0, 50) for j in range(k)) for i in range(10_000)):
             if point in points:
                 self.assertTrue(searchKDRTree(kdrTree, r, point))
+                self.assertTrue(searchKDTree(kdTree, point))
             else:
                 self.assertFalse(searchKDRTree(kdrTree, r, point))
+                self.assertFalse(searchKDTree(kdTree, point))
     
     def test_get_medianas(self):
         calc_medians = getMedians([(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)], 2, 2)
