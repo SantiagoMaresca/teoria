@@ -1,7 +1,7 @@
 import itertools as it
 import random
 import unittest
-from utils import count_elapsed_time, gen_puntos_negativos
+from utils import count_elapsed_time, gen_puntos_negativos, puntos_aleatorios_muestra
 from time import time
 
 import numpy as np
@@ -113,8 +113,7 @@ def main():
     arch.write("k;r;n;tipo;tiempo\n")
     for k in [5, 10, 15, 20]:
         print(f'Construyendo el conjunto de puntos para k={k}')
-        conjunto_puntos_all = [tuple(random.randint(0, 100+1) for j in range(k)) for i in range(N_MAX)]
-        print(f"Large tree...{conjunto_puntos_all[0]}")
+        conjunto_puntos_all = puntos_aleatorios_muestra(k, N_MAX)
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
             for r in range(1, 5+1):
