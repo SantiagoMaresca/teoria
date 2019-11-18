@@ -108,6 +108,7 @@ def prom_sin_outliers(datos, m = 2):
 makeKDRTreeTiempo = count_elapsed_time(makeKDRTree)
 makeKDTreeTiempo = count_elapsed_time(makeKDTree)
 searchKDRTreeTiempo = count_elapsed_time(searchKDRTree)
+searchKDTreeTiempo = count_elapsed_time(searchKDTree)
 
 def main():
     """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
