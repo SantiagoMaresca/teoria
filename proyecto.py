@@ -108,6 +108,7 @@ def prom_sin_outliers(datos, m = 2):
 makeKDRTreeTiempo = count_elapsed_time(makeKDRTree)
 makeKDTreeTiempo = count_elapsed_time(makeKDTree)
 searchKDRTreeTiempo = count_elapsed_time(searchKDRTree)
+searchKDTreeTiempo = count_elapsed_time(searchKDTree)
 
 def main():
     """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
@@ -134,26 +135,34 @@ def main():
 
                 print("Realizando 100 búsquedas positivas...")
                 tiempos = []
+                tiemposKd = []
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
-                    if not val:
+                    tiempoKd, valKd = searchKDTreeTiempo(kdrTree, n_pos)
+                    if (not val) or (not val):
                         assert False # Algo falló
                     tiempos.append(tiempo)
+                    tiemposKd.append(tiempoKd)
                 arch.write(f'{k};{r};{n};buscar_pos;{prom_sin_outliers(tiempos)}\n')
+                arch.write(f'{k};{r};{n};buscar_pos_kd;{prom_sin_outliers(tiemposKd)}\n')
 
                 print("Realizando 100 búsquedas negativas...")
                 tiempos = []
+                tiemposKd = []
                 for ign in range(100):
                     n_neg = tuple(random.randint(0, 100+1) for j in range(k))
                     while (n_neg in conjunto_puntos):
                         n_neg = tuple(random.randint(0, 100+1) for j in range(k))
 
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_neg)
-                    if val:
+                    tiempoKd, valKd = searchKDTreeTiempo(kdrTree, n_neg)
+                    if val or val:
                         assert False # Algo falló
                     tiempos.append(tiempo)
+                    tiemposKd.append(tiempoKd)
                 arch.write(f'{k};{r};{n};buscar_neg;{prom_sin_outliers(tiempos)}\n')
+                arch.write(f'{k};{r};{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
     arch.close()
 
 
