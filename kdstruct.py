@@ -28,11 +28,11 @@ def makeKDTree(points, dim = 0):
 
 def getMedians(points, r, dim):
     """Se obtienen las r medianas desde dim"""
-    medians = [None] * r
+    medians = []
     for i in range(r):
         points_d = list(set(map(lambda p: at(p, dim+i), points)))
         points_d.sort()
-        medians[i] = points_d[len(points_d) // 2]
+        medians.append(points_d[len(points_d) // 2])
     return medians
 
 def matches_criteria(criteria, medians, point, dim):
@@ -52,10 +52,6 @@ def makeKDRTree(points, r, dim = 0, level = 0):
     elif len(points) == 1:
         return tuple(points) # Leaf nodes have one point.
 
-    # if (level > 40):
-    #     print(f"level={level},n={points},dim={dim}")
-
-    # Obtenemos las r medianas, para las dimensiones dim, dim+1, ..., dim+(r-1)
     medians = getMedians(points, r, dim)
     partitions = [None] * (2**r + 1) # Tendremos 2**r particiones (hijos)
     partitions[0] = medians
@@ -63,8 +59,6 @@ def makeKDRTree(points, r, dim = 0, level = 0):
     criterias = list(it.product([False, True], repeat = r))
     for criteria in criterias:  # 2^r iteraciones
         partitions_points.append([p for p in points if matches_criteria(criteria, medians, p, dim)]) # n iteraciones
-        # if (level > 40):
-        #     print(f"CHILD{len(partitions_points)}={partitions_points[-1]}")
 
     for i in range(len(partitions_points)):
         new_dim = (dim+r) % len(points[0])

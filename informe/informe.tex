@@ -14,6 +14,7 @@
 \usepackage{tabularx}
 \usepackage{listingsutf8}
 \usepackage{color}
+\usepackage{import}
 \usepackage{enumitem}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
@@ -31,7 +32,7 @@
   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
   firstnumber=1,                   % start line enumeration with line 1
   frame=single,	                   % adds a frame around the code
-  inputpath=../servidor/src/sistop/,
+  inputpath=./../,
   inputencoding=utf8/latin1,
   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
   keywordstyle=\color{blue},       % keyword style
@@ -53,7 +54,6 @@
 }
 % \usepackage{algorithmicx}
 \usepackage{algorithm}
-\usepackage{algpseudocode}
 % \usepackage{fontawesome}
 
 \fancyhead{}
@@ -62,30 +62,7 @@
 
 
 
-\makeatletter
-\renewcommand{\ALG@name}{Algoritmo}
-\makeatother
-
-\algrenewcommand\algorithmicprocedure{\textbf{procedimiento}}
-\algrenewcommand\algorithmicif{\textbf{si}}
-\algrenewcommand\algorithmicthen{\textbf{entonces}}
-\algrenewcommand\algorithmicelse{\textbf{si no}}
-%\algrenewcommand\algorithmicelsif{\textbf{sino si}}
-\algrenewcommand\algorithmicend{\textbf{fin}}
-\algrenewcommand\algorithmicrequire{\textbf{Pre:}}
-\algrenewcommand\algorithmicensure{\textbf{Post:}}
-\algrenewcommand\algorithmicforall{\textbf{para cada}}
-\algrenewcommand\algorithmicdo{\textbf{hacer}}
-\algrenewcommand{\algorithmiccomment}[1]{\hfill$\langle$ #1}
-
 \graphicspath{ {img/} }
-
-\newcommand{\threadFig}[0]{
-    \begin{tikzpicture}
-      \vspace{5pt}
-      \draw[very thick,color=black] plot [smooth,tension=1.5] coordinates{(0.3,0.5) (0.25,0.37) (0.3,0.25) (0.25,0.12)};
-    \end{tikzpicture}
-}
 
 \newcommand{\BigO}[1]{\ensuremath{\mathrm{O}\bigl(#1\bigr)}}
 \newcommand{\type}[1]{\mbox{\textbf{#1}}}

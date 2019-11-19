@@ -1,35 +1,45 @@
 \section{Estructura de datos}
-  Se representa el arbol-kdr mediante tuplas anidadas, donde cada
-  nodo interno es una tupla de orden $2^r + 1$, y los externos (hojas)
-  son de orden 1.
+Se representa el arbol-kdr mediante tuplas anidadas, donde cada
+nodo interno es una tupla de orden $2^r + 1$, y los externos (hojas)
+son de orden 1.
 
-  Para asignar un subarbol a cada nodo se realiza una bipartición por
-  cada dimensión, hayando la mediana si se ordena el conjunto por cada
-  una de las r dimensiones de ese nivel, y comparando la i-ésima
-  dimensión con la mediana segun el orden por ella.
-  De esta forma el primer árbol tendra a los nodos cuya primer
-  dimensión es menor a la (primer) mediana, y cuya segunda dimensión
-  es también menor a la mediana, y así para cada una de las r
-  dimensiones consideradas, siempre ``menor''.
+Para asignar un subarbol a cada nodo se realiza una bipartición por
+cada dimensión, hayando la mediana si se ordena el conjunto por cada
+una de las r dimensiones de ese nivel, y comparando la i-ésima
+dimensión con la mediana segun el orden por ella.
+De esta forma el primer árbol tendra a los nodos cuya primer
+dimensión es menor a la (primer) mediana, y cuya segunda dimensión
+es también menor a la mediana, y así para cada una de las r
+dimensiones consideradas, siempre ``menor''.
 
-  Podemos representar con una cadena de largo r el
-  criterio de cada subarbol. El primero sería ``$<<<$'' si consideramos
-  r = 3. El segundo subárbol tendría el criterio ``$<<\geq$''.
+Podemos representar con una cadena de largo r el
+criterio de cada subarbol. El primero sería ``$<<<$'' si consideramos
+r = 3. El segundo subárbol tendría el criterio ``$<<\geq$''.
 
-  Si imaginamos un mapeo del alfabeto $\Sigma = \{ <, \geq \}$ al
-  alfabeto binario $\{ 0, 1 \}$ podemos considerar el orden numérico
-  que corresponde a ellos: 00, 01, 10, 11 (para largo 2).
-  Si
-  listamos la cadena de cada uno de los subárboles con r =2 estas son,
-  en el órden en que aparecen los subárboles, ``$<<$'', ``$<\geq$'',
-  ``$\geq<$'', ``$\geq\geq$''.
+Si imaginamos un mapeo del alfabeto $\Sigma = \{ <, \geq \}$ al
+alfabeto binario $\{ 0, 1 \}$ podemos considerar el orden numérico
+que corresponde a ellos: 00, 01, 10, 11 (para largo 2).
+Si
+listamos la cadena de cada uno de los subárboles con r =2 estas son,
+en el órden en que aparecen los subárboles, ``$<<$'', ``$<\geq$'',
+``$\geq<$'', ``$\geq\geq$''.
   
-  Así la tupla de los nodos internos tiene la forma (raiz, subarbol1,
-  subarbol2, ...), siguiendo cada subárbol el criterio definido.
+Así la tupla de los nodos internos tiene la forma (raiz, subarbol1,
+subarbol2, ...), siguiendo cada subárbol el criterio definido.
 
 
 
 \section{Armado de un Árbol-KDR}
+\subsection{Obtención de las medianas}
+\lstinputlisting[firstline=29,lastline=36,language=Python,caption={\call{getMedians}}]{kdstruct.py}
+
+\subsection{Comparación del criterio}
+\lstinputlisting[firstline=38,lastline=46,language=Python,caption={\call{matches\_criteria}}]{kdstruct.py}
+
+\subsection{Armado del árbol}
+\lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
+
+  
 \begin{lstlisting}[language=Python]
 	
 def makeKDRTree(points, r, dim = 0):
@@ -53,19 +63,19 @@ def makeKDRTree(points, r, dim = 0):
 	\end{lstlisting}
 \textbf{ Orden de tiempo de ejecución del algoritmo : }
 {Mejor de los casos: points es nulo o es una tupla de largo uno : 
-el algoritmo tendrá orden de ejecución : O(1).
+el algoritmo tendrá orden de ejecución : \BigO{1}.
 Caso promedio : 
 }
 
-	\section{Búsqueda de un Árbol-KDR}
-	\begin{lstlisting}[language=Python]
-	def searchKDRTree(kdrTree, r, point, dim = 0):
-		if (kdrTree is None):
-			return False
-		elif len(kdrTree) == 1:
-			return kdrTree[0] == point
-		medians = kdrTree[0]
-		i = 1
+\section{Búsqueda de un Árbol-KDR}
+\begin{lstlisting}[language=Python]
+  def searchKDRTree(kdrTree, r, point, dim = 0):
+    if (kdrTree is None):
+      return False
+    elif len(kdrTree) == 1:
+      return kdrTree[0] == point
+    medians = kdrTree[0]
+    i = 1
 		for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
 			if (matches_criteria(criteria, medians, point, dim)):
 				# go to this subtree
@@ -76,13 +86,9 @@ Caso promedio :
 		return False
 		\end{lstlisting}
 	\textbf{ Orden de tiempo de ejecución del algoritmo : }
-		{Mejor de los casos: el arbol es nulo o es tiene un único ``nodo'' : 
-		el algoritmo tendrá orden de ejecución : O(1).
+		Mejor de los casos: el arbol es nulo o es tiene un único ``nodo'' : 
+		el algoritmo tendrá orden de ejecución : \BigO{1}.
 		Caso promedio : \(T(n)= 2^r (T(n/2^r)+ O(r))\)
-		
-		
-		
-		}
 
 % \begin{algorithm}
 % \caption{Busca una tupla de largo R en un arbol KDR}
