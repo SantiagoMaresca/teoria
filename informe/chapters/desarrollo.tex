@@ -39,56 +39,25 @@ subarbol2, ...), siguiendo cada subárbol el criterio definido.
 \subsection{Armado del árbol}
 \lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
 
-  
-\begin{lstlisting}[language=Python]
-	
-def makeKDRTree(points, r, dim = 0):
-	if not points:
-		return None # Empty trees are None
-	elif len(points) == 1:
-		return tuple(points) # Leaf nodes have one point.
 
-	# Obtenemos las r medianas, para las dimensiones dim, dim+1, ..., dim+(r-1)
-	medians = getMedians(points, r, dim)
+\textbf{Orden de tiempo de ejecución del algoritmo:}
+\begin{description}
+\item[Mejor de los casos:] points es nulo o es una tupla de largo uno.
+  El algoritmo tendrá orden de ejecución : \BigO{1}.
+\item[Caso promedio:] \BigO{n}
+\end{description}
 
-	partitions = [None] * (2**r + 1) # Tendremos 2**r particiones (hijos)
-	partitions[0] = medians
-	i = 1
-	for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-		partition = [p for p in points if matches_criteria(criteria, medians, p, dim)] # n iteraciones
-		partitions[i] = makeKDRTree(partition, r, (dim+r) % len(points))
-		i += 1
-
-	return tuple(partitions)
-	\end{lstlisting}
-\textbf{ Orden de tiempo de ejecución del algoritmo : }
-{Mejor de los casos: points es nulo o es una tupla de largo uno : 
-el algoritmo tendrá orden de ejecución : \BigO{1}.
-Caso promedio : 
-}
 
 \section{Búsqueda de un Árbol-KDR}
-\begin{lstlisting}[language=Python]
-  def searchKDRTree(kdrTree, r, point, dim = 0):
-    if (kdrTree is None):
-      return False
-    elif len(kdrTree) == 1:
-      return kdrTree[0] == point
-    medians = kdrTree[0]
-    i = 1
-		for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-			if (matches_criteria(criteria, medians, point, dim)):
-				# go to this subtree
-				chosen_subtree = kdrTree[i]
-				return searchKDRTree(chosen_subtree, r, point, dim+r)
-			i += 1
-	
-		return False
-		\end{lstlisting}
-	\textbf{ Orden de tiempo de ejecución del algoritmo : }
-		Mejor de los casos: el arbol es nulo o es tiene un único ``nodo'' : 
-		el algoritmo tendrá orden de ejecución : \BigO{1}.
-		Caso promedio : \(T(n)= 2^r (T(n/2^r)+ O(r))\)
+\lstinputlisting[firstline=69,lastline=84,language=Python,caption={\call{searchKDRTree}}]{kdstruct.py}
+
+
+\textbf{Orden de tiempo de ejecución del algoritmo:}
+\begin{description}
+\item[Mejor de los casos:] El arbol es nulo o es tiene un único ``nodo''.
+  El algoritmo tendrá orden de ejecución : \BigO{1}.
+\item[Caso promedio:] \(T(n)= 2^r (T(n/2^r)+ O(r))\).
+\end{description}
 
 % \begin{algorithm}
 % \caption{Busca una tupla de largo R en un arbol KDR}
