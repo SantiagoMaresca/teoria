@@ -1,6 +1,9 @@
-from proyecto import *
+from kdstruct import *
 from utils import *
 import sys
+import random
+import unittest
+import itertools as it
 
 class TestUtils(unittest.TestCase):
     def genera_todos_los_puntos(self):
@@ -61,7 +64,7 @@ class TestKDTree(unittest.TestCase):
             else:
                 self.assertFalse(searchKDRTree(kdrTree, r, point))
                 self.assertFalse(searchKDTree(kdTree, point))
-    
+
     def test_get_medianas(self):
         calc_medians = getMedians([(9, 1, 38, 23, 75), (9, 1, 37, 24, 75), (10, 10, 37, 23, 76)], 2, 2)
         exp_medians = [38, 24]

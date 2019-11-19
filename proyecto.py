@@ -1,11 +1,9 @@
-import itertools as it
 import random
-import unittest
 from utils import count_elapsed_time, gen_puntos_negativos, puntos_aleatorios_muestra
 from time import time
 import numpy as np
 
-import struct as kd
+import kdstruct as kd
 
 
 def prom_sin_outliers(datos, m = 2):
@@ -52,7 +50,7 @@ def main():
                 for ign in range(100):
                     n_pos = random.choice(conjunto_puntos)
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
-                    tiempoKd, valKd = searchKDTreeTiempo(kdrTree, n_pos)
+                    tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_pos)
                     if (not val) or (not val):
                         assert False # Algo falló
                     tiempos.append(tiempo)
@@ -69,7 +67,7 @@ def main():
                         n_neg = tuple(random.randint(0, 100+1) for j in range(k))
 
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_neg)
-                    tiempoKd, valKd = searchKDTreeTiempo(kdrTree, n_neg)
+                    tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_neg)
                     if val or val:
                         assert False # Algo falló
                     tiempos.append(tiempo)

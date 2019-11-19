@@ -1,3 +1,5 @@
+import itertools as it
+
 def at(point, i):
     return point[i % len(point)]
 
