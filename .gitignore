@@ -1,5 +1,6 @@
 env/Lib
 env/Scripts
+env/
 __pycache__/
 env/pyvenv.cfg
 datos.csv
