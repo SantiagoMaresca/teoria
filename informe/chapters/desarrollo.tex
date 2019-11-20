@@ -49,6 +49,15 @@ Asi el orden de la función \call{getMedians} es:
 \subsection{Comparación del criterio}
 \lstinputlisting[firstline=38,lastline=46,language=Python,caption={\call{matches\_criteria}}]{kdstruct.py}
 
+\call{criteria} es un vector que tiene cada combinación de \(\{ T, F \}\),
+tomadas de a \(r\), por lo que tiene un largo de \(2^r\). \call{enumerate}
+tambien es perezoso, y en cada paso tiene costo \BigO{1}.
+
+El cuerpo del \call{for} tiene costo \BigO{1}. Por lo que el orden de la función es:
+
+\[ 2^r \cdot \BigO{1} \]
+
+
 \subsection{Armado del árbol}
 \lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
 
