@@ -48,34 +48,9 @@ subarbol2, ...), siguiendo cada subárbol el criterio definido.
 \end{description}
 
 
-\begin{document}
-	\section{Búsqueda de un Árbol-KDR}
-	\begin{lstlisting}[language=Python]
-	def searchKDRTree(kdrTree, r, point, dim = 0):
-		if (kdrTree is None):
-			return False
-		elif len(kdrTree) == 1:
-			return kdrTree[0] == point
-		medians = kdrTree[0]
-		i = 1
-		for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-			if (matches_criteria(criteria, medians, point, dim)):
-				# go to this subtree
-				chosen_subtree = kdrTree[i]
-				return searchKDRTree(chosen_subtree, r, point, dim+r)
-			i += 1
 
-		return False
-		\end{lstlisting}
-	\textbf{ Orden de tiempo de ejecución del algoritmo : }
-		{Mejor de los casos: el arbol es nulo o es tiene un único "nodo" :
-		el algoritmo tendrá orden de ejecución : O(1).
-		Caso promedio : T(n)= 2^r (T(n/2^r)+ O(r))
-
-
-
-		}
-
+\section{Búsqueda de un Árbol-KDR}
+\lstinputlisting[firstline=29,lastline=36,language=Python,caption={\call{getMedians}}]{kdstruct.py}
 
 
 \textbf{Orden de tiempo de ejecución del algoritmo:}
