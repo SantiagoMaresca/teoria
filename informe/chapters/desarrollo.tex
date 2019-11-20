@@ -33,6 +33,19 @@ subarbol2, ...), siguiendo cada subárbol el criterio definido.
 \subsection{Obtención de las medianas}
 \lstinputlisting[firstline=29,lastline=36,language=Python,caption={\call{getMedians}}]{kdstruct.py}
 
+El bucle de la linea 4 realiza r iteraciones. El \call{map} de la linea 5 es
+\emph{perezoso}, por lo que su costo (cada aplicación es \BigO{1}) se une al de
+armar un set, que es \BigO{n}. Esto para quitar duplicados.
+Finalmente pasarlo a una lista es a su vez \BigO{n}.
+
+Ordenarlo como en la linea 6 tiene un orden \BigO{n \log{n}}, y la inserción de
+la linea 7 tiene orden \BigO{1}.
+
+Asi el orden de la función \call{getMedians} es:
+
+\[ r \cdot (\BigO{n}+\BigO{n}+\BigO{n \log{n}} + \BigO{1}) \\
+   = r \cdot \BigO{n \log{n}}  \]
+
 \subsection{Comparación del criterio}
 \lstinputlisting[firstline=38,lastline=46,language=Python,caption={\call{matches\_criteria}}]{kdstruct.py}
 
