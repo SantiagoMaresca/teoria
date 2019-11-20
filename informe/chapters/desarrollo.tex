@@ -23,7 +23,7 @@ Si
 listamos la cadena de cada uno de los subárboles con r =2 estas son,
 en el órden en que aparecen los subárboles, ``$<<$'', ``$<\geq$'',
 ``$\geq<$'', ``$\geq\geq$''.
-  
+
 Así la tupla de los nodos internos tiene la forma (raiz, subarbol1,
 subarbol2, ...), siguiendo cada subárbol el criterio definido.
 
@@ -64,16 +64,16 @@ subarbol2, ...), siguiendo cada subárbol el criterio definido.
 				chosen_subtree = kdrTree[i]
 				return searchKDRTree(chosen_subtree, r, point, dim+r)
 			i += 1
-	
+
 		return False
 		\end{lstlisting}
 	\textbf{ Orden de tiempo de ejecución del algoritmo : }
-		{Mejor de los casos: el arbol es nulo o es tiene un único "nodo" : 
+		{Mejor de los casos: el arbol es nulo o es tiene un único "nodo" :
 		el algoritmo tendrá orden de ejecución : O(1).
 		Caso promedio : T(n)= 2^r (T(n/2^r)+ O(r))
-		
-		
-		
+
+
+
 		}
 
 
