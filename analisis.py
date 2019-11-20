@@ -21,22 +21,40 @@ if __name__ == '__main__':
     df_crear_kdr = df[df["tipo"] == CREAR_KDR]
     df_crear_kd = df[df["tipo"] == CREAR_KD]
 
-    fig, ax = plt.subplots(1, 1)
-
     # Tiempo buscar positivo vs k
-    fig.suptitle('Tiempo de buscar positivo')
-    (
-        df_buscar_pos_kdr
-        .groupby(['k'], as_index=False)
-        .mean()
-        .plot(x='k', y='tiempo', label='kdr', ax=ax)
-    )
-    (
-        df_buscar_pos_kd
-        .groupby(['k'], as_index=False)
-        .mean()
-        .plot(x='k', y='tiempo', ax=ax, label='kd')
-    )
+    for r in range(1, 5+1):
+        (
+            df_buscar_pos_kdr[df_buscar_pos_kdr['r'] == r]
+            .groupby(['k', 'n'], as_index=False)['tiempo']
+            .mean()
+            .pivot(index='k', columns='n', values='tiempo')
+            .plot()
+        )
+        plt.suptitle(f'Tiempo de buscar positivo r={r}')
+
+    for n in [10**5, 5 * 10**5, 10**6]:
+        (
+            df_buscar_pos_kdr[df_buscar_pos_kdr['n'] == n]
+            .groupby(['k', 'r'], as_index=False)['tiempo']
+            .mean()
+            .pivot(index='k', columns='r', values='tiempo')
+            .plot()
+        )
+        plt.suptitle(f'Tiempo de buscar positivo n={n}')
+
+
+    # (
+    #     df_buscar_pos_kdr
+    #     .groupby(['k'], as_index=False)
+    #     .mean()
+    #     .plot(x='k', y='tiempo', label='kdr', ax=ax)
+    # )
+    # (
+    #     df_buscar_pos_kd
+    #     .groupby(['k'], as_index=False)
+    #     .mean()
+    #     .plot(x='k', y='tiempo', ax=ax, label='kd')
+    # )
     # TODO: Agrupar para cada valor de k, n y r
 
     # Tiempo buscar positivo vs r
