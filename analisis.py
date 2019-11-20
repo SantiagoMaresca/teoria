@@ -30,13 +30,13 @@ if __name__ == '__main__':
             .mean()
             .pivot(index='k', columns='n', values='tiempo')
             .plot(style='.-')
-            
+
         )
         ax.set_xlim([4,21])
         ax.set_ylabel('tiempo (ms)')
         ax.margins(.05)
         plt.suptitle(f'Tiempo de buscar positivo r={r}')
-        plt.savefig(f'fig/buscar_pos_k_r{r}.png')
+        plt.savefig(f'informe/img/buscar_pos_k_r{r}.png')
 
     # for n in [10**5, 5 * 10**5, 10**6]:
     #     (
