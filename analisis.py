@@ -14,6 +14,7 @@ BUSCAR_KD_NEG = 'buscar_neg_kd'
 if __name__ == '__main__':
     headers = ['k','r','n', 'tipo', 'tiempo']
     df = pd.read_csv('datos.csv',names=headers, sep=';', header=0)
+    df['tiempo'] = df['tiempo'] * 1000
     df_buscar_pos_kdr = df[df["tipo"] == BUSCAR_KDR_POS]
     df_buscar_pos_kd = df[df["tipo"] == BUSCAR_KD_POS]
     df_buscar_neg_kdr = df[df["tipo"] == BUSCAR_KDR_NEG]
@@ -23,24 +24,30 @@ if __name__ == '__main__':
 
     # Tiempo buscar positivo vs k
     for r in range(1, 5+1):
-        (
+        ax = (
             df_buscar_pos_kdr[df_buscar_pos_kdr['r'] == r]
             .groupby(['k', 'n'], as_index=False)['tiempo']
             .mean()
             .pivot(index='k', columns='n', values='tiempo')
-            .plot()
+            .plot(style='.-')
+            
         )
+        ax.set_xlim([4,21])
+        ax.set_ylabel('tiempo (ms)')
+        ax.margins(.05)
         plt.suptitle(f'Tiempo de buscar positivo r={r}')
+        plt.savefig(f'fig/buscar_pos_k_r{r}.png')
 
-    for n in [10**5, 5 * 10**5, 10**6]:
-        (
-            df_buscar_pos_kdr[df_buscar_pos_kdr['n'] == n]
-            .groupby(['k', 'r'], as_index=False)['tiempo']
-            .mean()
-            .pivot(index='k', columns='r', values='tiempo')
-            .plot()
-        )
-        plt.suptitle(f'Tiempo de buscar positivo n={n}')
+    # for n in [10**5, 5 * 10**5, 10**6]:
+    #     (
+    #         df_buscar_pos_kdr[df_buscar_pos_kdr['n'] == n]
+    #         .groupby(['k', 'r'], as_index=False)['tiempo']
+    #         .mean()
+    #         .pivot(index='k', columns='r', values='tiempo')
+    #         .plot(style='.-')
+    #     )
+    #     plt.savefig(f'fig/buscar_pos_k_n{n}.png')
+
 
 
     # (
