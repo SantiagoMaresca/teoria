@@ -45,8 +45,8 @@ def main():
         conjunto_puntos_all = puntos_aleatorios_muestra(k, N_MAX)
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
-            puntos_positivos = (random.choice(conjunto_puntos) for _ in range(100))
-            puntos_negativos = gen_puntos_negativos(conjunto_puntos, k)
+            puntos_positivos = list(random.choice(conjunto_puntos) for _ in range(100))
+            puntos_negativos = list(gen_puntos_negativos(conjunto_puntos, k))
             tiempo, kdTree = makeKDTreeTiempo(conjunto_puntos[:n])
             arch.write(f'{k};-;{n};arbolkd;{tiempo}\n')
 
@@ -62,7 +62,6 @@ def main():
                 tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_neg)
                 assert not valKd
                 tiemposKd.append(tiempoKd)
-                break
             arch.write(f'{k};-;{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
 
             for r in range(1, 5+1):
