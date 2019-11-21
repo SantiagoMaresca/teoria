@@ -48,14 +48,14 @@ def main():
             puntos_positivos = list(random.choice(conjunto_puntos) for _ in range(100))
             puntos_negativos = list(gen_puntos_negativos(conjunto_puntos, k))
             tiempo, kdTree = makeKDTreeTiempo(conjunto_puntos[:n])
-            arch.write(f'{k};-;{n};arbolkd;{tiempo}\n')
+            arch.write(f'{k};0;{n};arbolkd;{tiempo}\n')
 
             tiemposKd = []
             for n_pos in puntos_positivos:
                 tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_pos)
                 assert valKd
                 tiemposKd.append(tiempoKd)
-            arch.write(f'{k};-;{n};buscar_pos_kd;{prom_sin_outliers(tiemposKd)}\n')
+            arch.write(f'{k};0;{n};buscar_pos_kd;{prom_sin_outliers(tiemposKd)}\n')
 
             tiemposKd = []
             for n_neg in puntos_negativos:
