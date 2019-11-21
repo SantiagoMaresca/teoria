@@ -71,14 +71,15 @@ def searchKDRTree(kdrTree, r, point, dim = 0):
         return False
     elif len(kdrTree) == 1:
         return kdrTree[0] == point
-
     medians = kdrTree[0]
-    i = 1
-    for criteria in it.product([False, True], repeat = r):  # 2^r iteraciones
-        if (matches_criteria(criteria, medians, point, dim)):
-            # go to this subtree
-            chosen_subtree = kdrTree[i]
-            return searchKDRTree(chosen_subtree, r, point, (dim+r) % len(point))
-        i += 1
+    index = matching_index(point, medians, dim, r) + 1
+    chosen_subtree = kdrTree[index]
+    return searchKDRTree(chosen_subtree, r, point, (dim+r) % len(point))
 
     return False
+
+def matching_index(point, medians, dim, r):
+    out = 0
+    for bit in map(lambda b: 1 if b else 0, (at(point, dim+i) >= at(medians, i) for i in range(r))):
+        out = (out << 1) | bit
+    return out
