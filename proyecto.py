@@ -62,7 +62,7 @@ def main():
                 tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_neg)
                 assert not valKd
                 tiemposKd.append(tiempoKd)
-            arch.write(f'{k};-;{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
+            arch.write(f'{k};0;{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
 
             for r in range(1, 5+1):
                 print(f'Construyendo el árbol con r={r} y n={n}')
