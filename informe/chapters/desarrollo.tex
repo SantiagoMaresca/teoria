@@ -58,8 +58,18 @@ El cuerpo del \call{for} tiene costo \BigO{1}. Por lo que el orden de la funció
 \[ 2^r \cdot \BigO{1} \]
 
 
-%% \subsection{Armado del árbol}
-%% \lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
+\subsection{Armado del árbol}
+\lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
+
+Las linas 3-6 son de orden \BigO{1}. La llamada de la linea 8 es
+\(r \cdot \BigO{n \log{n}}\), y las lineas 9-11 son también \BigO{1}.
+
+El armado de \call{criterias} es \BigO{2^r}, y con la llamada
+a \call{matches\_criteria} con una complejidad de \(2^r \cdot \BigO{1}\),
+filtrando \(n\) puntos en la linea 14 la complejidad de ese bucle es de
+\( 2^r \cdot n \cdot 2^r \cdot \BigO{1} = 2^{2r} \cdot \BigO{n}\).
+
+
 
 
 %% \textbf{Orden de tiempo de ejecución del algoritmo:}
