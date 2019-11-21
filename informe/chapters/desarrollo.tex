@@ -58,27 +58,38 @@ El cuerpo del \call{for} tiene costo \BigO{1}. Por lo que el orden de la funció
 \[ 2^r \cdot \BigO{1} \]
 
 
-\subsection{Armado del árbol}
-\lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
+%% \subsection{Armado del árbol}
+%% \lstinputlisting[firstline=48,lastline=68,language=Python,caption={\call{makeKDRTree}}]{kdstruct.py}
 
 
-\textbf{Orden de tiempo de ejecución del algoritmo:}
-\begin{description}
-\item[Mejor de los casos:] points es nulo o es una tupla de largo uno.
-  El algoritmo tendrá orden de ejecución : \BigO{1}.
-\item[Caso promedio:] \BigO{n}
-\end{description}
+%% \textbf{Orden de tiempo de ejecución del algoritmo:}
+%% \begin{description}
+%% \item[Mejor de los casos:] points es nulo o es una tupla de largo uno.
+%%   El algoritmo tendrá orden de ejecución : \BigO{1}.
+%% \item[Caso promedio:] \BigO{n}
+%% \end{description}
 
 
 
 \section{Búsqueda de un Árbol-KDR}
-\lstinputlisting[firstline=69,lastline=84,language=Python,caption={\call{getMedians}}]{kdstruct.py}
+\lstinputlisting[firstline=69,lastline=80,language=Python,caption={\call{searchKDRTree}}]{kdstruct.py}
 
+\subsection{Mejor de los casos}
+El arbol es nulo o es tiene un único ``nodo''.
+El algoritmo tendrá orden de ejecución : \BigO{1}.
 
-\textbf{Orden de tiempo de ejecución del algoritmo:}
-\begin{description}
-\item[Mejor de los casos:] El arbol es nulo o es tiene un único ``nodo''.
-  El algoritmo tendrá orden de ejecución : \BigO{1}.
-\item[Caso promedio:] \(T(n)= 2^r (T(n/2^r)+ O(r))\).
-\end{description}
+\subsection{Caso promedio}
+Las lineas 2 a 7 tienen un orden de \BigO{1}. La función \call{matching\_index}
+es \BigO{r}, ya que compara cada dimensión correspondiente (\([dim, dim+r)\))
+con las medianas. 8 y 9 son a su vez \BigO{1}.
+En el caso promedio, cada subarbol de un arbol con \(n\) puntos tiene
+\(\frac{n}{2^r}\) puntos, por lo que la recursión de la llamada es:
+
+\[ T(n) = T(\frac{n}{2^r}) + \BigO{r} \]
+
+Tomando r como ua constante (la función varía según n), la recursión
+tiene la forma necesaria para aplicar el teorema maestro.
+
+\[ T(n) = 1 \cdot T(\frac{n}{2^r}) + r \cdot \BigO{1} \]
+
 
