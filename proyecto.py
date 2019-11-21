@@ -21,6 +21,15 @@ makeKDTreeTiempo = count_elapsed_time(kd.makeKDTree)
 searchKDRTreeTiempo = count_elapsed_time(kd.searchKDRTree)
 searchKDTreeTiempo = count_elapsed_time(kd.searchKDTree)
 
+def gen_puntos_negativos(all_puntos):
+    for _ in range(100):
+        n_neg = tuple(random.randint(0, 100+1) for j in range(k))
+        while (n_neg in conjunto_puntos):
+            n_neg = tuple(random.randint(0, 100+1) for j in range(k))
+        yield n_neg
+
+
+
 def main():
     """Se realizan simulaciones para k en {5, 10, 15, 20}, r= 1..5, n = {10^5, 5 * 10^5, 10^6}
        Promediando los tiempos para 100 búsquedas positivas y 100 búsquedas negativas"""
@@ -36,44 +45,47 @@ def main():
         conjunto_puntos_all = puntos_aleatorios_muestra(k, N_MAX)
         for n in [10**5, 5 * 10**5, 10**6]:
             conjunto_puntos = conjunto_puntos_all[:n]
+            puntos_positivos = (random.choice(conjunto_puntos) for _ in range(100))
+            puntos_negativos = gen_puntos_negativos(conjunto_puntos)
+            tiempo, kdTree = makeKDTreeTiempo(conjunto_puntos[:n])
+            arch.write(f'{k};{r};{n};arbolkd;{tiempo}\n')
+
+            tiemposKd = []
+            for n_pos in puntos_positivos:
+                tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_pos)
+                assert valKd
+                tiemposKd.append(tiempoKd)
+            arch.write(f'{k};{r};{n};buscar_pos_kd;{prom_sin_outliers(tiemposKd)}\n')
+
+            tiemposKd = []
+            for n_neg in puntos_negativos:
+                tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_neg)
+                assert not valKd
+                tiemposKd.append(tiempoKd)
+                break
+            arch.write(f'{k};{r};{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
+
             for r in range(1, 5+1):
                 print(f'Construyendo el árbol con r={r} y n={n}')
                 tiempo, kdrTree = makeKDRTreeTiempo(conjunto_puntos[:n], r)
                 arch.write(f'{k};{r};{n};arbolkdr;{tiempo}\n')
 
-                tiempo, kdTree = makeKDTreeTiempo(conjunto_puntos[:n])
-                arch.write(f'{k};{r};{n};arbolkd;{tiempo}\n')
-
                 print("Realizando 100 búsquedas positivas...")
                 tiempos = []
-                tiemposKd = []
-                for ign in range(100):
-                    n_pos = random.choice(conjunto_puntos)
+                for n_pos in puntos_positivos:
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_pos)
-                    tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_pos)
-                    if (not val) or (not val):
-                        assert False # Algo falló
+                    assert val
                     tiempos.append(tiempo)
-                    tiemposKd.append(tiempoKd)
                 arch.write(f'{k};{r};{n};buscar_pos;{prom_sin_outliers(tiempos)}\n')
-                arch.write(f'{k};{r};{n};buscar_pos_kd;{prom_sin_outliers(tiemposKd)}\n')
 
                 print("Realizando 100 búsquedas negativas...")
                 tiempos = []
-                tiemposKd = []
-                for ign in range(100):
-                    n_neg = tuple(random.randint(0, 100+1) for j in range(k))
-                    while (n_neg in conjunto_puntos):
-                        n_neg = tuple(random.randint(0, 100+1) for j in range(k))
-
+                for n_neg in puntos_negativos:
                     tiempo, val = searchKDRTreeTiempo(kdrTree, r, n_neg)
-                    tiempoKd, valKd = searchKDTreeTiempo(kdTree, n_neg)
-                    if val or val:
-                        assert False # Algo falló
+                    assert not val
                     tiempos.append(tiempo)
-                    tiemposKd.append(tiempoKd)
                 arch.write(f'{k};{r};{n};buscar_neg;{prom_sin_outliers(tiempos)}\n')
-                arch.write(f'{k};{r};{n};buscar_neg_kd;{prom_sin_outliers(tiemposKd)}\n')
+
     arch.close()
 
 
