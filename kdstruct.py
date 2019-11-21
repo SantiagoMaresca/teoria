@@ -74,8 +74,8 @@ def searchKDRTree(kdrTree, r, point, dim = 0):
     medians = kdrTree[0]
     index = matching_index(point, medians, dim, r) + 1
     chosen_subtree = kdrTree[index]
-    return searchKDRTree(chosen_subtree, r, point, (dim+r) % len(point))
-
+    next_dim = (dim+r) % len(point)
+    return searchKDRTree(chosen_subtree, r, point, next_dim)
     return False
 
 def matching_index(point, medians, dim, r):
