@@ -27,24 +27,23 @@ if __name__ == '__main__':
 
     # Tiempo buscar positivo vs k
     for i, r in enumerate(range(1, 5+1)):
-        ax = fig.add_subplot(f'32{r}')
+        ax = fig.add_subplot(f'32{i}')
         (
             df_buscar_pos_kdr[df_buscar_pos_kdr['r'] == r]
             .groupby(['k', 'n'], as_index=False)['tiempo']
             .mean()
-            .pivot(index='k', columns='n', values='tiempo')
+            .pivot(index='n', columns='k', values='tiempo')
             .plot(style='.-', ax=ax)
         )
-        ax.set_xlim([4,21])
+        # ax.set_xlim([4,21])
         ax.set_ylabel('tiempo (ms)')
         ax.margins(.05)
         ax.title.set_text(f'r={r}')
         ax.get_legend().remove()
         handles, labels = ax.get_legend_handles_labels()
         fig.legend(handles, labels, loc=(0.7, 0.2))
-
     fig.tight_layout()
-    plt.savefig(f'informe/img/buscar_pos_k.png')
+    plt.savefig(f'informe/img/buscar_pos_n.png')
 
     # for n in [10**5, 5 * 10**5, 10**6]:
     #     (
