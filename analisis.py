@@ -24,10 +24,9 @@ if __name__ == '__main__':
 
 
     fig = plt.figure(figsize=(10,10))
-
     # Tiempo buscar positivo vs k
     for i, r in enumerate(range(1, 5+1)):
-        ax = fig.add_subplot(f'32{i}')
+        ax = fig.add_subplot(f'32{i+1}')
         (
             df_buscar_pos_kdr[df_buscar_pos_kdr['r'] == r]
             .groupby(['k', 'n'], as_index=False)['tiempo']
@@ -45,59 +44,24 @@ if __name__ == '__main__':
     fig.tight_layout()
     plt.savefig(f'informe/img/buscar_pos_n.png')
 
-    # for n in [10**5, 5 * 10**5, 10**6]:
-    #     (
-    #         df_buscar_pos_kdr[df_buscar_pos_kdr['n'] == n]
-    #         .groupby(['k', 'r'], as_index=False)['tiempo']
-    #         .mean()
-    #         .pivot(index='k', columns='r', values='tiempo')
-    #         .plot(style='.-')
-    #     )
-    #     plt.savefig(f'fig/buscar_pos_k_n{n}.png')
+    fig = plt.figure(figsize=(10,10))
+    # Tiempo buscar positivo vs k
+    for i, r in enumerate(range(1, 5+1)):
+        ax = fig.add_subplot(f'32{i+1}')
+        (
+            df_buscar_neg_kdr[df_buscar_neg_kdr['r'] == r]
+            .groupby(['k', 'n'], as_index=False)['tiempo']
+            .mean()
+            .pivot(index='n', columns='k', values='tiempo')
+            .plot(style='.-', ax=ax)
+        )
+        # ax.set_xlim([4,21])
+        ax.set_ylabel('tiempo (ms)')
+        ax.margins(.05)
+        ax.title.set_text(f'r={r}')
+        ax.get_legend().remove()
+        handles, labels = ax.get_legend_handles_labels()
+        fig.legend(handles, labels, loc=(0.7, 0.2))
+    fig.tight_layout()
+    plt.savefig(f'informe/img/buscar_neg_n.png')
 
-
-
-    # (
-    #     df_buscar_pos_kdr
-    #     .groupby(['k'], as_index=False)
-    #     .mean()
-    #     .plot(x='k', y='tiempo', label='kdr', ax=ax)
-    # )
-    # (
-    #     df_buscar_pos_kd
-    #     .groupby(['k'], as_index=False)
-    #     .mean()
-    #     .plot(x='k', y='tiempo', ax=ax, label='kd')
-    # )
-    # TODO: Agrupar para cada valor de k, n y r
-
-    # Tiempo buscar positivo vs r
-    # (
-    #     df_buscar_pos_kdr
-    #     .groupby(['r'], as_index=False)
-    #     .mean()
-    #     .plot(x='r', y='tiempo')
-    # )
-    # (
-    #     df_buscar_pos_kd
-    #     .groupby(['r'], as_index=False)
-    #     .mean()
-    #     .plot(x='r', y='tiempo')
-    # )
-
-    # # Tiempo buscar positivo vs n
-    # (
-    #     df_buscar_pos_kdr
-    #     .groupby(['n'], as_index=False)
-    #     .mean()
-    #     .plot(x='n', y='tiempo')
-    # )
-    # (
-    #     df_buscar_pos_kd
-    #     .groupby(['n'], as_index=False)
-    #     .mean()
-    #     .plot(x='n', y='tiempo')
-    # )
-
-    # plot
-    # plt.show()
