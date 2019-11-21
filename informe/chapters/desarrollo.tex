@@ -35,16 +35,16 @@ subarbol2, ...), siguiendo cada subárbol el criterio definido.
 
 El bucle de la linea 4 realiza r iteraciones. El \call{map} de la linea 5 es
 \emph{perezoso}, por lo que su costo (cada aplicación es \BigO{1}) se une al de
-armar un set, que es \BigO{n}. Esto para quitar duplicados.
-Finalmente pasarlo a una lista es a su vez \BigO{n}.
+armar un set, que es \BigT{n}. Esto para quitar duplicados.
+Finalmente pasarlo a una lista es a su vez \BigT{n}.
 
-Ordenarlo como en la linea 6 tiene un orden \BigO{n \log{n}}, y la inserción de
+Ordenarlo como en la linea 6 tiene un orden \BigT{n \log{n}}, y la inserción de
 la linea 7 tiene orden \BigO{1}.
 
 Asi el orden de la función \call{getMedians} es:
 
-\[ r \cdot (\BigO{n}+\BigO{n}+\BigO{n \log{n}} + \BigO{1}) \\
-   = r \cdot \BigO{n \log{n}}  \]
+\[ r \cdot (\BigT{n}+\BigT{n}+\BigT{n \log{n}} + \BigO{1}) \\
+   = r \cdot \BigT{n \log{n}}  \]
 
 \subsection{Comparación del criterio}
 \lstinputlisting[firstline=38,lastline=46,language=Python,caption={\call{matches\_criteria}}]{kdstruct.py}
@@ -67,9 +67,40 @@ Las linas 3-6 son de orden \BigO{1}. La llamada de la linea 8 es
 El armado de \call{criterias} es \BigO{2^r}, y con la llamada
 a \call{matches\_criteria} con una complejidad de \(2^r \cdot \BigO{1}\),
 filtrando \(n\) puntos en la linea 14 la complejidad de ese bucle es de
-\( 2^r \cdot n \cdot 2^r \cdot \BigO{1} = 2^{2r} \cdot \BigO{n}\).
+\( 2^r \cdot n \cdot 2^r \cdot \BigO{1} = 2^{2r} \cdot \BigT{n}\).
+
+El segundo bucle, teniendo \call{partitions\_points} \(2^r\)
+elementos, donde cada particiones tiene (en promedio)
+\(\frac{n}{2^r}\) elementos (y la linea 17 es \BigT{1}) tiene complejidad:
+
+\[2^r \cdot T(\frac{n}{2^r}) \]
 
 
+
+De esta forma toda la función tiene como recursión:
+
+\begin{equation*}
+  \begin{split}
+   T(n) &= \BigT{n \log{n}} + 2^{2r} \cdot \BigT{n} + 2^r \cdot
+   T(\frac{n}{2^r}) \\
+        &= 2^r \cdot T(\frac{n}{2^r}) + \BigT{n \log{n}}
+  \end{split}
+\end{equation*}
+
+Considerando que se tiene la forma del teorema maestro,
+siendo \(\log_{2^r}{2^r} = 1\) y \(f(n) = n^1 \log^1{n}\),
+entonces podemos concluir que:
+
+\begin{equation*}
+  \begin{split}
+    f(n) &= \BigT{n^{\log_b{a}} \log^k{n}}, k = 1 \\
+    T(n) &= aT(\frac{n}{b}) + f(n) \\
+    a    &= 2^r \\
+    b    &= 2^r \\
+    &\implies T(n) = \BigT{n^{\log_b{a}} \log^{k+1}{n}} \\
+    &\implies T(n) = \BigT{n \log^2{n}}
+  \end{split}
+\end{equation*}
 
 
 %% \textbf{Orden de tiempo de ejecución del algoritmo:}
