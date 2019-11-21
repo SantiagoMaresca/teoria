@@ -23,7 +23,7 @@ if __name__ == '__main__':
     df_crear_kd = df[df["tipo"] == CREAR_KD]
 
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10,10))
 
     # Tiempo buscar positivo vs k
     for i, r in enumerate(range(1, 5+1)):
@@ -40,6 +40,8 @@ if __name__ == '__main__':
         ax.margins(.05)
         ax.title.set_text(f'r={r}')
         ax.get_legend().remove()
+        handles, labels = ax.get_legend_handles_labels()
+        fig.legend(handles, labels, loc=(0.7, 0.2))
 
     fig.tight_layout()
     plt.savefig(f'informe/img/buscar_pos_k.png')
