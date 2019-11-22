@@ -63,3 +63,23 @@ pero la diferencia no es significativa.
   \label{fig:neg-kd}
   \end{center}
 \end{figure}
+
+
+En las figuras \ref{fig:pos-kd} y \ref{fig:neg-kd} podemos observar
+una clara superioridad del árbol kd de búsqueda, logrando sus
+búsquedas siempre por debajo de los 0.010ms, y esto se mantiene para
+todo k y todo r. Ente los árboles kdr se observa variabilidad pero no
+es signifiativa. Aún más, la creación de árboles
+(fig. \ref{fig:armado}) muestra que la creación de arboles kd es
+también superior, lo que es de esperar por la mayor complejidad del
+algoritmos al tener que comparar r medianas.
+
+
+\begin{figure}
+  \begin{center}
+  \includegraphics[width=.7\textwidth]{armado_n}
+  \caption{Tiempo de creación de los arboles kd y kdr
+    según n, para distintos valores de r y k.}
+  \label{fig:armado}
+  \end{center}
+\end{figure}
